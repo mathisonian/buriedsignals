@@ -6,7 +6,6 @@ class Footer extends React.Component {
     const { hasError, idyll, updateProps, ...props } = this.props;
     return (
       <div className="footer">
-        
       </div>
     );
   }

@@ -45,8 +45,6 @@ module.exports = Footer;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -55,56 +53,85 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var React = require('react');
 
-var Nav = function (_React$Component) {
-    _inherits(Nav, _React$Component);
+var Nav = function (_React$PureComponent) {
+    _inherits(Nav, _React$PureComponent);
 
-    function Nav() {
+    function Nav(props) {
         _classCallCheck(this, Nav);
 
-        return _possibleConstructorReturn(this, (Nav.__proto__ || Object.getPrototypeOf(Nav)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (Nav.__proto__ || Object.getPrototypeOf(Nav)).call(this, props));
+
+        _this.sideDrawerToggleHandler = _this.sideDrawerToggleHandler.bind(_this);
+        _this.state = {
+            showSideDrawer: true
+        };
+        return _this;
     }
 
     _createClass(Nav, [{
+        key: "sideDrawerToggleHandler",
+        value: function sideDrawerToggleHandler() {
+            console.log(this.state.showSideDrawer);
+            this.setState({
+                showSideDrawer: !this.state.showSideDrawer
+            });
+            console.log("*****");
+            console.log(this.state.showSideDrawer);
+            this.toggleHamburger();
+        }
+    }, {
+        key: "toggleHamburger",
+        value: function toggleHamburger() {
+            var hamburger = document.getElementById("hamburger");
+            var sideDrawer = document.getElementById("side-drawer");
+            if (this.state.showSideDrawer) {
+                hamburger.classList.add("is-active");
+                sideDrawer.classList.add("open");
+            } else {
+                hamburger.classList.remove("is-active");
+                sideDrawer.classList.remove("open");
+            }
+        }
+    }, {
         key: "render",
         value: function render() {
-            var _props = this.props,
-                hasError = _props.hasError,
-                idyll = _props.idyll,
-                updateProps = _props.updateProps,
-                props = _objectWithoutProperties(_props, ["hasError", "idyll", "updateProps"]);
-
+            // const { hasError, idyll, updateProps, ...props } = this.props;
             return React.createElement(
-                "nav",
+                "div",
                 { className: "navbar" },
                 React.createElement(
                     "div",
                     { className: "navbar-container" },
                     React.createElement(
                         "div",
-                        { className: "navbar-header" },
-                        React.createElement(
-                            "button",
-                            { className: "navbar-toggler", "data-toggle": "open-navbar1" },
-                            React.createElement("span", null),
-                            React.createElement("span", null),
-                            React.createElement("span", null)
-                        ),
+                        { className: "navbar-logo" },
                         React.createElement(
                             "a",
                             { href: "#" },
-                            React.createElement(
-                                "h4",
-                                null,
-                                "Buried Signals"
-                            )
+                            "bs."
                         )
                     ),
                     React.createElement(
                         "div",
-                        { className: "navbar-menu", id: "open-navbar1" },
+                        { className: "three col" },
+                        React.createElement(
+                            "div",
+                            { className: "hamburger", id: "hamburger", onClick: this.sideDrawerToggleHandler.bind() },
+                            React.createElement("span", { className: "line" }),
+                            React.createElement("span", { className: "line" }),
+                            React.createElement("span", { className: "line" })
+                        )
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { id: "side-drawer", className: "overlay" },
+                    React.createElement(
+                        "nav",
+                        { className: "overlay-menu" },
                         React.createElement(
                             "ul",
-                            { className: "navbar-nav" },
+                            null,
                             React.createElement(
                                 "li",
                                 null,
@@ -149,7 +176,7 @@ var Nav = function (_React$Component) {
     }]);
 
     return Nav;
-}(React.Component);
+}(React.PureComponent);
 
 module.exports = Nav;
 
@@ -65176,7 +65203,7 @@ if ("development" === 'production') {
 },{"./cjs/scheduler-tracing.development.js":"/Users/buriedsignals/Code/node_modules/scheduler/cjs/scheduler-tracing.development.js","./cjs/scheduler-tracing.production.min.js":"/Users/buriedsignals/Code/node_modules/scheduler/cjs/scheduler-tracing.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "id": 2, "type": "component", "name": "TextContainer", "children": [{ "id": 3, "type": "meta", "properties": { "title": { "type": "value", "value": "Buried Signals" }, "description": { "type": "value", "value": "Short description of your project" } } }] }, { "id": 4, "type": "component", "name": "Nav", "children": [] }, { "id": 5, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "fullWidth" } }, "children": [{ "id": 6, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "index-header" } }, "children": [{ "id": 7, "type": "component", "name": "h1", "children": [{ "id": 8, "type": "textnode", "value": "Buried Signals" }] }, { "id": 9, "type": "component", "name": "hr", "properties": { "className": { "type": "value", "value": "soft-separator" } }, "children": [] }] }, { "id": 10, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "articles" } }, "children": [{ "id": 11, "type": "textnode", "value": "* " }, { "id": 12, "type": "component", "name": "a", "properties": { "href": { "type": "value", "value": "./yemen/" } }, "children": [{ "id": 13, "type": "textnode", "value": "Yemen" }] }] }] }, { "id": 14, "type": "component", "name": "TextContainer", "children": [{ "id": 15, "type": "component", "name": "Footer", "children": [] }] }] };
+module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "id": 2, "type": "component", "name": "TextContainer", "children": [{ "id": 3, "type": "meta", "properties": { "title": { "type": "value", "value": "Buried Signals" }, "description": { "type": "value", "value": "Short description of your project" } } }] }, { "id": 4, "type": "component", "name": "Nav", "children": [] }, { "id": 5, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "fullWidth" } }, "children": [{ "id": 6, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "index-header" } }, "children": [{ "id": 7, "type": "component", "name": "h1", "children": [{ "id": 8, "type": "textnode", "value": "Buried Signals" }] }, { "id": 9, "type": "component", "name": "hr", "properties": { "className": { "type": "value", "value": "soft-separator" } }, "children": [] }] }, { "id": 10, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "articles" } }, "children": [] }] }, { "id": 11, "type": "component", "name": "TextContainer", "children": [{ "id": 12, "type": "component", "name": "Footer", "children": [] }] }] };
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
