@@ -1,0 +1,19 @@
+{
+  "name": "buriedsignals",
+  "version": "1.0.0",
+  "license": "MIT",
+  "idyll": {
+    "css": "styles.css",
+    "googleFonts": ["Cardo"],
+    "theme": "./static/theme.css",
+    "layout": "./static/layout.css",
+    "authorView": false,
+    "output": "docs/"
+  },
+  "dependencies": {
+    "d3": "^4.0.0",
+    "idyll": "^4.4.0",
+    "idyll-d3-component": "^2.0.0",
+    "react": "ˆ16.0.0"
+  }
+}
