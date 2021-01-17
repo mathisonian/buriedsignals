@@ -31,7 +31,78 @@ var Footer = function (_React$Component) {
           updateProps = _props.updateProps,
           props = _objectWithoutProperties(_props, ["hasError", "idyll", "updateProps"]);
 
-      return React.createElement("div", { className: "footer" });
+      return React.createElement(
+        "div",
+        { className: "footer" },
+        React.createElement(
+          "div",
+          { className: "footer-first-row" },
+          React.createElement(
+            "div",
+            { className: "substack-embed" },
+            React.createElement(
+              "p",
+              null,
+              "Sign up for my newsletter"
+            ),
+            React.createElement("iframe", { src: "https://buriedsignals.substack.com/embed", width: "300", height: "90", frameBorder: "0", scrolling: "no" })
+          ),
+          React.createElement(
+            "div",
+            { className: "footer-right" },
+            React.createElement(
+              "a",
+              { href: "mailto:tom@wallrunners.org" },
+              "tom@wallrunners.org"
+            )
+          )
+        ),
+        React.createElement(
+          "div",
+          { className: "footer-second-row" },
+          React.createElement(
+            "div",
+            { className: "footer-slogan" },
+            React.createElement(
+              "span",
+              null,
+              "Something about truth."
+            )
+          ),
+          React.createElement(
+            "div",
+            { className: "footer-social-icons" },
+            React.createElement(
+              "a",
+              { href: "https://twitter.com/buriedsignals", rel: "me", target: "_blank" },
+              React.createElement(
+                "svg",
+                { className: "footer-social-icon", "data-icon": "twitter", viewBox: "0 0 512 512", fill: "currentColor" },
+                React.createElement(
+                  "title",
+                  null,
+                  "twitter icon"
+                ),
+                React.createElement("path", { d: "M419.6 168.6c-11.7 5.2-24.2 8.7-37.4 10.2 13.4-8.1 23.8-20.8 28.6-36 -12.6 7.5-26.5 12.9-41.3 15.8 -11.9-12.6-28.8-20.6-47.5-20.6 -42 0-72.9 39.2-63.4 79.9 -54.1-2.7-102.1-28.6-134.2-68 -17 29.2-8.8 67.5 20.1 86.9 -10.7-0.3-20.7-3.3-29.5-8.1 -0.7 30.2 20.9 58.4 52.2 64.6 -9.2 2.5-19.2 3.1-29.4 1.1 8.3 25.9 32.3 44.7 60.8 45.2 -27.4 21.4-61.8 31-96.4 27 28.8 18.5 63 29.2 99.8 29.2 120.8 0 189.1-102.1 185-193.6C399.9 193.1 410.9 181.7 419.6 168.6z" })
+              )
+            ),
+            React.createElement(
+              "a",
+              { href: "https://www.linkedin.com/in/tomvaillant", rel: "me", target: "_blank" },
+              React.createElement(
+                "svg",
+                { className: "footer-social-icon", "data-icon": "linkedin", viewBox: "0 0 512 512", fill: "currentColor" },
+                React.createElement(
+                  "title",
+                  null,
+                  "linkedin icon"
+                ),
+                React.createElement("path", { d: "M186.4 142.4c0 19-15.3 34.5-34.2 34.5 -18.9 0-34.2-15.4-34.2-34.5 0-19 15.3-34.5 34.2-34.5C171.1 107.9 186.4 123.4 186.4 142.4zM181.4 201.3h-57.8V388.1h57.8V201.3zM273.8 201.3h-55.4V388.1h55.4c0 0 0-69.3 0-98 0-26.3 12.1-41.9 35.2-41.9 21.3 0 31.5 15 31.5 41.9 0 26.9 0 98 0 98h57.5c0 0 0-68.2 0-118.3 0-50-28.3-74.2-68-74.2 -39.6 0-56.3 30.9-56.3 30.9v-25.2H273.8z" })
+              )
+            )
+          )
+        )
+      );
     }
   }]);
 
@@ -105,6 +176,7 @@ var Nav = function (_React$PureComponent) {
                     React.createElement(
                         "div",
                         { className: "navbar-logo" },
+                        React.createElement("span", { className: "nav-blue" }),
                         React.createElement(
                             "a",
                             { href: "#" },
@@ -113,13 +185,22 @@ var Nav = function (_React$PureComponent) {
                     ),
                     React.createElement(
                         "div",
-                        { className: "three col" },
+                        { className: "navbar-right" },
+                        React.createElement(
+                            "a",
+                            { href: "https://buymeacoffee.com", target: "_blank" },
+                            React.createElement("img", { src: "../static/images/coffee.jpg" })
+                        ),
                         React.createElement(
                             "div",
-                            { className: "hamburger", id: "hamburger", onClick: this.sideDrawerToggleHandler.bind() },
-                            React.createElement("span", { className: "line" }),
-                            React.createElement("span", { className: "line" }),
-                            React.createElement("span", { className: "line" })
+                            { className: "three col" },
+                            React.createElement(
+                                "div",
+                                { className: "hamburger", id: "hamburger", onClick: this.sideDrawerToggleHandler.bind() },
+                                React.createElement("span", { className: "line" }),
+                                React.createElement("span", { className: "line" }),
+                                React.createElement("span", { className: "line" })
+                            )
                         )
                     )
                 ),
@@ -20396,6 +20477,46 @@ var H1 = function (_React$PureComponent) {
 }(_react2.default.PureComponent);
 
 exports.default = H1;
+},{"./generateHeaders":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/generateHeaders.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js":[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _generateHeaders = require('./generateHeaders');
+
+var _generateHeaders2 = _interopRequireDefault(_generateHeaders);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var H2 = function (_React$PureComponent) {
+  _inherits(H2, _React$PureComponent);
+
+  function H2() {
+    _classCallCheck(this, H2);
+
+    return _possibleConstructorReturn(this, _React$PureComponent.apply(this, arguments));
+  }
+
+  H2.prototype.render = function render() {
+    return _react2.default.createElement(_generateHeaders2.default, _extends({ size: '2' }, this.props));
+  };
+
+  return H2;
+}(_react2.default.PureComponent);
+
+exports.default = H2;
 },{"./generateHeaders":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/generateHeaders.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":[function(require,module,exports){
 'use strict';
 
@@ -65203,7 +65324,7 @@ if ("development" === 'production') {
 },{"./cjs/scheduler-tracing.development.js":"/Users/buriedsignals/Code/node_modules/scheduler/cjs/scheduler-tracing.development.js","./cjs/scheduler-tracing.production.min.js":"/Users/buriedsignals/Code/node_modules/scheduler/cjs/scheduler-tracing.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "id": 2, "type": "component", "name": "TextContainer", "children": [{ "id": 3, "type": "meta", "properties": { "title": { "type": "value", "value": "Buried Signals" }, "description": { "type": "value", "value": "Short description of your project" } } }] }, { "id": 4, "type": "component", "name": "Nav", "children": [] }, { "id": 5, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "fullWidth" } }, "children": [{ "id": 6, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "index-header" } }, "children": [{ "id": 7, "type": "component", "name": "h1", "children": [{ "id": 8, "type": "textnode", "value": "Buried Signals" }] }, { "id": 9, "type": "component", "name": "hr", "properties": { "className": { "type": "value", "value": "soft-separator" } }, "children": [] }] }, { "id": 10, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "articles" } }, "children": [] }] }, { "id": 11, "type": "component", "name": "TextContainer", "children": [{ "id": 12, "type": "component", "name": "Footer", "children": [] }] }] };
+module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "id": 2, "type": "component", "name": "TextContainer", "children": [{ "id": 3, "type": "meta", "properties": { "title": { "type": "value", "value": "Buried Signals" }, "description": { "type": "value", "value": "Short description of your project" } } }] }, { "id": 4, "type": "component", "name": "Nav", "children": [] }, { "id": 5, "type": "component", "name": "TextContainer", "children": [{ "id": 6, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "page-container" } }, "children": [{ "id": 7, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "index-header" } }, "children": [{ "id": 8, "type": "component", "name": "h1", "children": [{ "id": 9, "type": "textnode", "value": "Buried Signals" }] }, { "id": 10, "type": "component", "name": "hr", "properties": { "className": { "type": "value", "value": "soft-separator" } }, "children": [] }] }, { "id": 11, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "articles-container" } }, "children": [{ "id": 12, "type": "component", "name": "h2", "children": [{ "id": 13, "type": "textnode", "value": "VISUAL ESSAYS" }] }] }] }, { "id": 14, "type": "component", "name": "Footer", "children": [] }] }] };
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
@@ -65212,10 +65333,11 @@ module.exports = {
 	'text-container': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js'),
 	'nav': require('/Users/buriedsignals/Code/buriedsignals/components/nav.js'),
 	'h1': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js'),
+	'h2': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js'),
 	'footer': require('/Users/buriedsignals/Code/buriedsignals/components/footer.js')
 };
 
-},{"/Users/buriedsignals/Code/buriedsignals/components/footer.js":"/Users/buriedsignals/Code/buriedsignals/components/footer.js","/Users/buriedsignals/Code/buriedsignals/components/nav.js":"/Users/buriedsignals/Code/buriedsignals/components/nav.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js"}],"__IDYLL_CONTEXT__":[function(require,module,exports){
+},{"/Users/buriedsignals/Code/buriedsignals/components/footer.js":"/Users/buriedsignals/Code/buriedsignals/components/footer.js","/Users/buriedsignals/Code/buriedsignals/components/nav.js":"/Users/buriedsignals/Code/buriedsignals/components/nav.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js"}],"__IDYLL_CONTEXT__":[function(require,module,exports){
 
 module.exports = function () {
 

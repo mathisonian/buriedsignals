@@ -38,16 +38,22 @@ class Nav extends React.PureComponent {
       <div className="navbar">
         <div className="navbar-container">
             <div className="navbar-logo">
+                <span className="nav-blue"></span>
                 <a href="#">
                     bs.
                 </a>
             </div>
 
-            <div className="three col">
-                <div className="hamburger" id="hamburger" onClick={this.sideDrawerToggleHandler.bind()}>
-                    <span className="line"></span>
-                    <span className="line"></span>
-                    <span className="line"></span>
+            <div className="navbar-right">
+                <a href="https://buymeacoffee.com" target="_blank">
+                    <img src="../static/images/coffee.jpg"></img>
+                </a>
+                <div className="three col">
+                    <div className="hamburger" id="hamburger" onClick={this.sideDrawerToggleHandler.bind()}>
+                        <span className="line"></span>
+                        <span className="line"></span>
+                        <span className="line"></span>
+                    </div>
                 </div>
             </div>
         </div>

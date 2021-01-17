@@ -6,7 +6,7 @@ const ARTICLES = [
       slug: 'yemen',
       description: 'yemen',
       interactive: true,
-      category: 'visual essays',
+      category: 'journalism',
     },
     {
       title: 'Stella',
@@ -15,7 +15,7 @@ const ARTICLES = [
       slug: 'stella',
       description: 'stella',
       interactive: false,
-      category: 'imaginary ink',
+      category: 'fiction',
     }
 ]
   

@@ -1,16 +1,16 @@
 [meta title:"Buried Signals" description:"Short description of your project" /]
 
 [Nav fullWidth:true /]
-
-[FullWidth]
+[div className:"page-container"]
   [div className:"index-header"]
     [h1]Buried Signals[/h1]
     [hr className:"soft-separator" /]
   [/div]
-  [div className:"articles"]
+  [div className:"articles-container"]
+    [h2]VISUAL ESSAYS[/h2]
   // * [Yemen](./yemen/)
   [/div]
-[/FullWidth]
+[/div]
 
 [Footer /]
 
