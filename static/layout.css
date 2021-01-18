@@ -13,7 +13,7 @@
 .navbar-logo a{
   text-decoration: none;
   color: black;
-  font-size: 30px;
+  font-size: 25px;
   font-weight: bold;
   position: relative;
 }
@@ -25,12 +25,12 @@
 .navbar-logo a:after {
   content: '';
   position: absolute;
-  bottom: -7%;
+  bottom: -8%;
   left: 50%;
   width: 0%;
   transform: translateX(-50%);
-  height: 5px;
-  background: #002fa7;
+  height: 4px;
+  background: #00538C;
   transition: .35s;
 }
 
@@ -72,7 +72,7 @@
 .hamburger .line{
   width: 40px;
   height: 4px;
-  background-color: #002fa7;
+  background-color: black;
   display: block;
   margin: 7px auto;
   -webkit-transition: all 0.3s ease-in-out;
@@ -106,7 +106,7 @@
   left: 0;
   width: 100%;
   height: 0%;
-  background: #002fa7;
+  background: #00538C;
   opacity: 0;
   visibility: hidden;
   transition: opacity .35s, visibility .35s, height .35s;
@@ -195,22 +195,23 @@
 /* FOOTER */
 
 .footer {
-  border-top: 1px solid #cecece;
+  border-top: 1px solid #ececec;
   background-color: #ececec;
   min-height: 300px;
 }
 
 .footer-first-row {
-  display: inline-flex;
+  position: relative;
   width: 100%;
   height: 130px;
-  flex-wrap: wrap;
-  align-items: center;
   padding: 0px 10px;
   margin-top: 40px;
 }
 
 .substack-embed {
+  position: absolute;
+  top: 5%;
+  left: 2%;
   display: inline-block;
   padding: 0 10px;
   width: 300px;
@@ -221,6 +222,9 @@
 }
 
 .footer-right {
+  position: absolute;
+  top: 30%;
+  right: 2%;
   width: 64%;
   min-width: 300px;
   text-align: center;
@@ -235,7 +239,7 @@
 }
 .footer-right a:hover {
   text-decoration: none;
-  color: #8a8a8A;
+  color: #0CAFFF;
 }
 
 .footer-second-row {
@@ -255,7 +259,7 @@
   transition: all 0.3s ease-in-out;
 }
 .footer-social-icon:hover {
-  color: #8a8a8A;
+  color: #0CAFFF;
 }
 
 .footer-slogan {

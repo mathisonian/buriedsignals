@@ -40,12 +40,12 @@ class Nav extends React.PureComponent {
             <div className="navbar-logo">
                 <span className="nav-blue"></span>
                 <a href="#">
-                    bs.
+                    buried signals
                 </a>
             </div>
 
             <div className="navbar-right">
-                <a href="https://buymeacoffee.com" target="_blank">
+                <a href="https://www.buymeacoffee.com/buriedsignals" target="_blank">
                     <img src="../static/images/coffee.jpg"></img>
                 </a>
                 <div className="three col">
@@ -60,10 +60,10 @@ class Nav extends React.PureComponent {
         <div id="side-drawer" className="overlay">
             <nav className="overlay-menu">
                 <ul>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Now</a></li>
-                    <li><a href="#">Consulting</a></li>
-                    <li><a href="#">Subscribe</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/now">Now</a></li>
+                    <li><a href="/consulting">Consulting</a></li>
+                    <li><a href="https://buriedsignals.substack.com/p/coming-soon">Subscribe</a></li>
                 </ul>
             </nav>
         </div>

@@ -1,7 +1,8 @@
 const React = require('react');
 
 class Footer extends React.Component {
-  
+
+
     render() {
     const { hasError, idyll, updateProps, ...props } = this.props;
     return (
@@ -9,7 +10,7 @@ class Footer extends React.Component {
         <div className="footer-first-row">
           <div className="substack-embed">
             <p>Sign up for my newsletter</p>
-            <iframe src="https://buriedsignals.substack.com/embed" width="300" height="90" frameBorder="0" scrolling="no"></iframe>
+            <iframe src="https://buriedsignals.substack.com/embed" width="300" height="90" frameBorder="0" scrolling="no" style={{background: '#ECECEC', backgroundColor: '#ECECEC'}}></iframe>
           </div>
           <div className="footer-right">
             <a href="mailto:tom@wallrunners.org">tom@wallrunners.org</a>
@@ -17,7 +18,7 @@ class Footer extends React.Component {
         </div>
         <div className="footer-second-row">
           <div className="footer-slogan">
-            <span>Something about truth.</span>
+            <span>Experiments in visual storytelling.</span>
           </div>
           <div className="footer-social-icons">
             <a href="https://twitter.com/buriedsignals" rel="me" target="_blank">

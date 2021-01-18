@@ -45,7 +45,7 @@ var Footer = function (_React$Component) {
               null,
               "Sign up for my newsletter"
             ),
-            React.createElement("iframe", { src: "https://buriedsignals.substack.com/embed", width: "300", height: "90", frameBorder: "0", scrolling: "no" })
+            React.createElement("iframe", { src: "https://buriedsignals.substack.com/embed", width: "300", height: "90", frameBorder: "0", scrolling: "no", style: { background: '#ECECEC', backgroundColor: '#ECECEC' } })
           ),
           React.createElement(
             "div",
@@ -66,7 +66,7 @@ var Footer = function (_React$Component) {
             React.createElement(
               "span",
               null,
-              "Something about truth."
+              "Experiments in visual storytelling."
             )
           ),
           React.createElement(
@@ -180,7 +180,7 @@ var Nav = function (_React$PureComponent) {
                         React.createElement(
                             "a",
                             { href: "#" },
-                            "bs."
+                            "buried signals"
                         )
                     ),
                     React.createElement(
@@ -188,7 +188,7 @@ var Nav = function (_React$PureComponent) {
                         { className: "navbar-right" },
                         React.createElement(
                             "a",
-                            { href: "https://buymeacoffee.com", target: "_blank" },
+                            { href: "https://www.buymeacoffee.com/buriedsignals", target: "_blank" },
                             React.createElement("img", { src: "../static/images/coffee.jpg" })
                         ),
                         React.createElement(
@@ -218,7 +218,7 @@ var Nav = function (_React$PureComponent) {
                                 null,
                                 React.createElement(
                                     "a",
-                                    { href: "#" },
+                                    { href: "/about" },
                                     "About"
                                 )
                             ),
@@ -227,7 +227,7 @@ var Nav = function (_React$PureComponent) {
                                 null,
                                 React.createElement(
                                     "a",
-                                    { href: "#" },
+                                    { href: "/now" },
                                     "Now"
                                 )
                             ),
@@ -236,7 +236,7 @@ var Nav = function (_React$PureComponent) {
                                 null,
                                 React.createElement(
                                     "a",
-                                    { href: "#" },
+                                    { href: "/consulting" },
                                     "Consulting"
                                 )
                             ),
@@ -245,7 +245,7 @@ var Nav = function (_React$PureComponent) {
                                 null,
                                 React.createElement(
                                     "a",
-                                    { href: "#" },
+                                    { href: "https://buriedsignals.substack.com/p/coming-soon" },
                                     "Subscribe"
                                 )
                             )
@@ -17308,7 +17308,500 @@ module.exports = function (value, locale) {
   })
 }
 
-},{"no-case":"/Users/buriedsignals/Code/buriedsignals/node_modules/no-case/no-case.js","upper-case":"/Users/buriedsignals/Code/buriedsignals/node_modules/upper-case/upper-case.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll-ast/dist/cjs/ast.schema.json":[function(require,module,exports){
+},{"no-case":"/Users/buriedsignals/Code/buriedsignals/node_modules/no-case/no-case.js","upper-case":"/Users/buriedsignals/Code/buriedsignals/node_modules/upper-case/upper-case.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/error.js":[function(require,module,exports){
+'use strict';
+
+var Response = require('./response');
+var extractResponseProps = require('./utils/extractResponseProps');
+var extend = require('xtend');
+
+function RequestError(message, props) {
+  var err = new Error(message);
+  err.name = 'RequestError';
+  this.name = err.name;
+  this.message = err.message;
+  if (err.stack) {
+    this.stack = err.stack;
+  }
+
+  this.toString = function() {
+    return this.message;
+  };
+
+  for (var k in props) {
+    if (props.hasOwnProperty(k)) {
+      this[k] = props[k];
+    }
+  }
+}
+
+RequestError.prototype = extend(Error.prototype);
+RequestError.prototype.constructor = RequestError;
+
+RequestError.create = function(message, req, props) {
+  var err = new RequestError(message, props);
+  Response.call(err, extractResponseProps(req));
+  return err;
+};
+
+module.exports = RequestError;
+
+},{"./response":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/response.js","./utils/extractResponseProps":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/utils/extractResponseProps.js","xtend":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/node_modules/xtend/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/index.js":[function(require,module,exports){
+'use strict';
+
+var
+  cleanURL = require('../plugins/cleanurl'),
+  XHR = require('./xhr'),
+  delay = require('./utils/delay'),
+  RequestError = require('./error'),
+  Response = require('./response'),
+  Request = require('./request'),
+  extend = require('xtend'),
+  once = require('./utils/once');
+
+var i,
+    createError = RequestError.create;
+
+function factory(defaults, plugins) {
+  defaults = defaults || {};
+  plugins = plugins || [];
+
+  function http(req, cb) {
+    var xhr, plugin, done, k, timeoutId, supportsLoadAndErrorEvents;
+
+    req = new Request(extend(defaults, req));
+
+    for (i = 0; i < plugins.length; i++) {
+      plugin = plugins[i];
+      if (plugin.processRequest) {
+        plugin.processRequest(req);
+      }
+    }
+
+    // Give the plugins a chance to create the XHR object
+    for (i = 0; i < plugins.length; i++) {
+      plugin = plugins[i];
+      if (plugin.createXHR) {
+        xhr = plugin.createXHR(req);
+        break; // First come, first serve
+      }
+    }
+    xhr = xhr || new XHR();
+
+    req.xhr = xhr;
+
+    // Use a single completion callback. This can be called with or without
+    // an error. If no error is passed, the request will be examined to see
+    // if it was successful.
+    done = once(delay(function(rawError) {
+      clearTimeout(timeoutId);
+      xhr.onload = xhr.onerror = xhr.onabort = xhr.onreadystatechange = xhr.ontimeout = xhr.onprogress = null;
+
+      var err = getError(req, rawError);
+
+      var res = err || Response.fromRequest(req);
+      for (i = 0; i < plugins.length; i++) {
+        plugin = plugins[i];
+        if (plugin.processResponse) {
+          plugin.processResponse(res);
+        }
+      }
+
+      // Invoke callbacks
+      if (err && req.onerror) req.onerror(err);
+      if (!err && req.onload) req.onload(res);
+      if (cb) cb(err, err ? undefined : res);
+
+    }));
+
+    supportsLoadAndErrorEvents = ('onload' in xhr) && ('onerror' in xhr);
+    xhr.onload = function() { done(); };
+    xhr.onerror = done;
+    xhr.onabort = function() { done(); };
+
+    // We'd rather use `onload`, `onerror`, and `onabort` since they're the
+    // only way to reliably detect successes and failures but, if they
+    // aren't available, we fall back to using `onreadystatechange`.
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+
+      if (req.aborted) return done();
+
+      if (!supportsLoadAndErrorEvents) {
+        // Assume a status of 0 is an error. This could be a false
+        // positive, but there's no way to tell when using
+        // `onreadystatechange` ):
+        // See matthewwithanm/react-inlinesvg#10.
+
+        // Some browsers don't like you reading XHR properties when the
+        // XHR has been aborted. In case we've gotten here as a result
+        // of that (either our calling `about()` in the timeout handler
+        // or the user calling it directly even though they shouldn't),
+        // be careful about accessing it.
+        var status;
+        try {
+          status = xhr.status;
+        } catch (err) {}
+        var err = status === 0 ? new Error('Internal XHR Error') : null;
+        return done(err);
+      }
+    };
+
+    // IE sometimes fails if you don't specify every handler.
+    // See http://social.msdn.microsoft.com/Forums/ie/en-US/30ef3add-767c-4436-b8a9-f1ca19b4812e/ie9-rtm-xdomainrequest-issued-requests-may-abort-if-all-event-handlers-not-specified?forum=iewebdevelopment
+    xhr.ontimeout = function() { /* noop */ };
+    xhr.onprogress = function() { /* noop */ };
+
+    xhr.open(req.method, req.url);
+
+    if (req.timeout) {
+      // If we use the normal XHR timeout mechanism (`xhr.timeout` and
+      // `xhr.ontimeout`), `onreadystatechange` will be triggered before
+      // `ontimeout`. There's no way to recognize that it was triggered by
+      // a timeout, and we'd be unable to dispatch the right error.
+      timeoutId = setTimeout(function() {
+        req.timedOut = true;
+        done();
+        try {
+          xhr.abort();
+        } catch (err) {}
+      }, req.timeout);
+    }
+
+    for (k in req.headers) {
+      if (req.headers.hasOwnProperty(k)) {
+        xhr.setRequestHeader(k, req.headers[k]);
+      }
+    }
+
+    xhr.send(req.body);
+
+    return req;
+  }
+
+  var method,
+    methods = ['get', 'post', 'put', 'head', 'patch', 'delete'],
+    verb = function(method) {
+      return function(req, cb) {
+        req = new Request(req);
+        req.method = method;
+        return http(req, cb);
+      };
+    };
+  for (i = 0; i < methods.length; i++) {
+    method = methods[i];
+    http[method] = verb(method);
+  }
+
+  http.plugins = function() {
+    return plugins;
+  };
+
+  http.defaults = function(newValues) {
+    if (newValues) {
+      return factory(extend(defaults, newValues), plugins);
+    }
+    return defaults;
+  };
+
+  http.use = function() {
+    var newPlugins = Array.prototype.slice.call(arguments, 0);
+    return factory(defaults, plugins.concat(newPlugins));
+  };
+
+  http.bare = function() {
+    return factory();
+  };
+
+  http.Request = Request;
+  http.Response = Response;
+  http.RequestError = RequestError;
+
+  return http;
+}
+
+module.exports = factory({}, [cleanURL]);
+
+/**
+ * Analyze the request to see if it represents an error. If so, return it! An
+ * original error object can be passed as a hint.
+ */
+function getError(req, err) {
+  if (req.aborted) return createError('Request aborted', req, {name: 'Abort'});
+
+  if (req.timedOut) return createError('Request timeout', req, {name: 'Timeout'});
+
+  var xhr = req.xhr;
+  var type = Math.floor(xhr.status / 100);
+
+  var kind;
+  switch (type) {
+    case 0:
+    case 2:
+      // These don't represent errors unless the function was passed an
+      // error object explicitly.
+      if (!err) return;
+      return createError(err.message, req);
+    case 4:
+      // Sometimes 4XX statuses aren't errors.
+      if (xhr.status === 404 && !req.errorOn404) return;
+      kind = 'Client';
+      break;
+    case 5:
+      kind = 'Server';
+      break;
+    default:
+      kind = 'HTTP';
+  }
+  var msg = kind + ' Error: ' +
+        'The server returned a status of ' + xhr.status +
+        ' for the request "' +
+        req.method.toUpperCase() + ' ' + req.url + '"';
+  return createError(msg, req);
+}
+
+},{"../plugins/cleanurl":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/plugins/cleanurl.js","./error":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/error.js","./request":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/request.js","./response":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/response.js","./utils/delay":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/utils/delay.js","./utils/once":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/utils/once.js","./xhr":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/xhr-browser.js","xtend":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/node_modules/xtend/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/request.js":[function(require,module,exports){
+'use strict';
+
+function Request(optsOrUrl) {
+  var opts = typeof optsOrUrl === 'string' ? {url: optsOrUrl} : optsOrUrl || {};
+  this.method = opts.method ? opts.method.toUpperCase() : 'GET';
+  this.url = opts.url;
+  this.headers = opts.headers || {};
+  this.body = opts.body;
+  this.timeout = opts.timeout || 0;
+  this.errorOn404 = opts.errorOn404 != null ? opts.errorOn404 : true;
+  this.onload = opts.onload;
+  this.onerror = opts.onerror;
+}
+
+Request.prototype.abort = function() {
+  if (this.aborted) return;
+  this.aborted = true;
+  this.xhr.abort();
+  return this;
+};
+
+Request.prototype.header = function(name, value) {
+  var k;
+  for (k in this.headers) {
+    if (this.headers.hasOwnProperty(k)) {
+      if (name.toLowerCase() === k.toLowerCase()) {
+        if (arguments.length === 1) {
+          return this.headers[k];
+        }
+
+        delete this.headers[k];
+        break;
+      }
+    }
+  }
+  if (value != null) {
+    this.headers[name] = value;
+    return value;
+  }
+};
+
+
+module.exports = Request;
+
+},{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/response.js":[function(require,module,exports){
+'use strict';
+
+var Request = require('./request');
+var extractResponseProps = require('./utils/extractResponseProps');
+
+function Response(props) {
+  this.request = props.request;
+  this.xhr = props.xhr;
+  this.headers = props.headers || {};
+  this.status = props.status || 0;
+  this.text = props.text;
+  this.body = props.body;
+  this.contentType = props.contentType;
+  this.isHttpError = props.status >= 400;
+}
+
+Response.prototype.header = Request.prototype.header;
+
+Response.fromRequest = function(req) {
+  return new Response(extractResponseProps(req));
+};
+
+
+module.exports = Response;
+
+},{"./request":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/request.js","./utils/extractResponseProps":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/utils/extractResponseProps.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/utils/delay.js":[function(require,module,exports){
+'use strict';
+
+// Wrap a function in a `setTimeout` call. This is used to guarantee async
+// behavior, which can avoid unexpected errors.
+
+module.exports = function(fn) {
+  return function() {
+    var
+      args = Array.prototype.slice.call(arguments, 0),
+      newFunc = function() {
+        return fn.apply(null, args);
+      };
+    setTimeout(newFunc, 0);
+  };
+};
+
+},{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/utils/extractResponseProps.js":[function(require,module,exports){
+'use strict';
+
+var extend = require('xtend');
+
+module.exports = function(req) {
+  var xhr = req.xhr;
+  var props = {request: req, xhr: xhr};
+
+  // Try to create the response from the request. If the request was aborted,
+  // accesssing properties of the XHR may throw an error, so we wrap in a
+  // try/catch.
+  try {
+    var lines, i, m, headers = {};
+    if (xhr.getAllResponseHeaders) {
+      lines = xhr.getAllResponseHeaders().split('\n');
+      for (i = 0; i < lines.length; i++) {
+        if ((m = lines[i].match(/\s*([^\s]+):\s+([^\s]+)/))) {
+          headers[m[1]] = m[2];
+        }
+      }
+    }
+
+    props = extend(props, {
+      status: xhr.status,
+      contentType: xhr.contentType || (xhr.getResponseHeader && xhr.getResponseHeader('Content-Type')),
+      headers: headers,
+      text: xhr.responseText,
+      body: xhr.response || xhr.responseText
+    });
+  } catch (err) {}
+
+  return props;
+};
+
+},{"xtend":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/node_modules/xtend/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/utils/once.js":[function(require,module,exports){
+'use strict';
+
+// A "once" utility.
+module.exports = function(fn) {
+  var result, called = false;
+  return function() {
+    if (!called) {
+      called = true;
+      result = fn.apply(this, arguments);
+    }
+    return result;
+  };
+};
+
+},{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/xhr-browser.js":[function(require,module,exports){
+module.exports = window.XMLHttpRequest;
+
+},{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/node_modules/xtend/index.js":[function(require,module,exports){
+module.exports = extend
+
+function extend() {
+    var target = {}
+
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+                target[key] = source[key]
+            }
+        }
+    }
+
+    return target
+}
+
+},{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/plugins/cleanurl.js":[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  processRequest: function(req) {
+    req.url = req.url.replace(/[^%]+/g, function(s) {
+      return encodeURI(s);
+    });
+  }
+};
+
+},{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/plugins/oldiexdomain.js":[function(require,module,exports){
+'use strict';
+
+var
+  urllite = require('urllite/lib/core'),
+  once = require('../lib/utils/once');
+
+var warningShown = false;
+
+var supportsXHR = once(function() {
+  return (
+    typeof window !== 'undefined' &&
+    window !== null &&
+    window.XMLHttpRequest &&
+    'withCredentials' in new window.XMLHttpRequest()
+  );
+});
+
+// This plugin creates a Microsoft `XDomainRequest` in supporting browsers when
+// the URL being requested is on a different domain. This is necessary to
+// support IE9, which only supports CORS via its proprietary `XDomainRequest`
+// object. We need to check the URL because `XDomainRequest` *doesn't* work for
+// same domain requests (unless your server sends CORS headers).
+// `XDomainRequest` also has other limitations (no custom headers), so we try to
+// catch those and error.
+module.exports = {
+  createXHR: function(req) {
+    var a, b, k;
+
+    if (typeof window === 'undefined' || window === null) {
+      return;
+    }
+
+    a = urllite(req.url);
+    b = urllite(window.location.href);
+
+    // Don't do anything for same-domain requests.
+    if (!a.host) {
+      return;
+    }
+    if (a.protocol === b.protocol && a.host === b.host && a.port === b.port) {
+      return;
+    }
+
+    // Show a warning if there are custom headers. We do this even in
+    // browsers that won't use XDomainRequest so that users know there's an
+    // issue right away, instead of if/when they test in IE9.
+    if (!warningShown && req.headers) {
+      for (k in req.headers) {
+        if (req.headers.hasOwnProperty(k)) {
+          warningShown = true;
+          if (window && window.console && window.console.warn) {
+            window.console.warn('Request headers are ignored in old IE when using the oldiexdomain plugin.');
+          }
+          break;
+        }
+      }
+    }
+
+    // Don't do anything if we can't do anything (:
+    // Don't do anything if the browser supports proper XHR.
+    if (window.XDomainRequest && !supportsXHR()) {
+      // We've come this far. Might as well make an XDomainRequest.
+      var xdr = new window.XDomainRequest();
+      xdr.setRequestHeader = function() {}; // Ignore request headers.
+      return xdr;
+    }
+  }
+};
+
+},{"../lib/utils/once":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/utils/once.js","urllite/lib/core":"/Users/buriedsignals/Code/buriedsignals/node_modules/urllite/lib/core.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll-ast/dist/cjs/ast.schema.json":[function(require,module,exports){
 module.exports={
   "$schema": "http://json-schema.org/draft-06/schema#",
   "title": "AST Schema V1",
@@ -20437,47 +20930,7 @@ var GenerateHeaders = function GenerateHeaders(props) {
 };
 
 exports.default = GenerateHeaders;
-},{"react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js":[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _generateHeaders = require('./generateHeaders');
-
-var _generateHeaders2 = _interopRequireDefault(_generateHeaders);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var H1 = function (_React$PureComponent) {
-  _inherits(H1, _React$PureComponent);
-
-  function H1() {
-    _classCallCheck(this, H1);
-
-    return _possibleConstructorReturn(this, _React$PureComponent.apply(this, arguments));
-  }
-
-  H1.prototype.render = function render() {
-    return _react2.default.createElement(_generateHeaders2.default, _extends({ size: '1' }, this.props));
-  };
-
-  return H1;
-}(_react2.default.PureComponent);
-
-exports.default = H1;
-},{"./generateHeaders":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/generateHeaders.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js":[function(require,module,exports){
+},{"react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js":[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -20517,7 +20970,110 @@ var H2 = function (_React$PureComponent) {
 }(_react2.default.PureComponent);
 
 exports.default = H2;
-},{"./generateHeaders":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/generateHeaders.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":[function(require,module,exports){
+},{"./generateHeaders":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/generateHeaders.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js":[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _generateHeaders = require('./generateHeaders');
+
+var _generateHeaders2 = _interopRequireDefault(_generateHeaders);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var H4 = function (_React$PureComponent) {
+  _inherits(H4, _React$PureComponent);
+
+  function H4() {
+    _classCallCheck(this, H4);
+
+    return _possibleConstructorReturn(this, _React$PureComponent.apply(this, arguments));
+  }
+
+  H4.prototype.render = function render() {
+    return _react2.default.createElement(_generateHeaders2.default, _extends({ size: '4' }, this.props));
+  };
+
+  return H4;
+}(_react2.default.PureComponent);
+
+exports.default = H4;
+},{"./generateHeaders":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/generateHeaders.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js":[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactInlinesvg = require('react-inlinesvg');
+
+var _reactInlinesvg2 = _interopRequireDefault(_reactInlinesvg);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SVG = function (_React$PureComponent) {
+  _inherits(SVG, _React$PureComponent);
+
+  function SVG() {
+    _classCallCheck(this, SVG);
+
+    return _possibleConstructorReturn(this, _React$PureComponent.apply(this, arguments));
+  }
+
+  SVG.prototype.render = function render() {
+    var _props = this.props,
+        hasError = _props.hasError,
+        updateProps = _props.updateProps,
+        idyll = _props.idyll,
+        props = _objectWithoutProperties(_props, ['hasError', 'updateProps', 'idyll']);
+
+    if (!this.props.src) {
+      return _react2.default.createElement('svg', props);
+    }
+    return _react2.default.createElement(_reactInlinesvg2.default, props);
+  };
+
+  return SVG;
+}(_react2.default.PureComponent);
+
+SVG.defaultProps = {
+  src: ''
+};
+
+SVG._idyll = {
+  name: 'SVG',
+  tagType: 'closed',
+  props: [{
+    name: 'src',
+    type: 'string',
+    example: '"https://upload.wikimedia.org/wikipedia/commons/f/fd/Ghostscript_Tiger.svg"'
+  }]
+};
+
+exports.default = SVG;
+},{"react":"react","react-inlinesvg":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/react-inlinesvg/lib/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22267,7 +22823,470 @@ var ReactJsonSchema = function () {
 }();
 
 exports.default = ReactJsonSchema;
-},{"change-case":"/Users/buriedsignals/Code/buriedsignals/node_modules/change-case/change-case.js","react":"react","react-dom-factories":"/Users/buriedsignals/Code/buriedsignals/node_modules/react-dom-factories/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/react-tooltip/dist/index.js":[function(require,module,exports){
+},{"change-case":"/Users/buriedsignals/Code/buriedsignals/node_modules/change-case/change-case.js","react":"react","react-dom-factories":"/Users/buriedsignals/Code/buriedsignals/node_modules/react-dom-factories/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/react-inlinesvg/lib/index.js":[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _httpplease = require('httpplease');
+
+var _httpplease2 = _interopRequireDefault(_httpplease);
+
+var _oldiexdomain = require('httpplease/plugins/oldiexdomain');
+
+var _oldiexdomain2 = _interopRequireDefault(_oldiexdomain);
+
+var _utils = require('./utils');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var http = _httpplease2.default.use(_oldiexdomain2.default);
+
+var Status = {
+  PENDING: 'pending',
+  LOADING: 'loading',
+  LOADED: 'loaded',
+  FAILED: 'failed',
+  UNSUPPORTED: 'unsupported'
+};
+
+var getRequestsByUrl = {};
+var loadedIcons = {};
+
+var InlineSVG = function (_React$PureComponent) {
+  _inherits(InlineSVG, _React$PureComponent);
+
+  function InlineSVG(props) {
+    _classCallCheck(this, InlineSVG);
+
+    var _this = _possibleConstructorReturn(this, (InlineSVG.__proto__ || Object.getPrototypeOf(InlineSVG)).call(this, props));
+
+    _this.handleLoad = function (err, res) {
+      var isCached = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      var _this$props = _this.props,
+          onLoad = _this$props.onLoad,
+          src = _this$props.src;
+
+      if (err) {
+        _this.fail(err);
+        return;
+      }
+
+      if (_this.isActive) {
+        _this.setState({
+          loadedText: res.text,
+          status: Status.LOADED
+        }, function () {
+          onLoad(src, isCached);
+        });
+      }
+    };
+
+    _this.state = {
+      status: Status.PENDING
+    };
+
+    _this.isActive = false;
+    return _this;
+  }
+
+  _createClass(InlineSVG, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      this.isActive = true;
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var status = this.state.status;
+      var _props = this.props,
+          src = _props.src,
+          supportTest = _props.supportTest;
+
+      /* istanbul ignore else */
+
+      if (status === Status.PENDING) {
+        if (supportTest()) {
+          if (src) {
+            this.startLoad();
+            return;
+          }
+
+          this.fail((0, _utils.configurationError)('Missing source'));
+          return;
+        }
+
+        this.fail((0, _utils.unsupportedBrowserError)());
+      }
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      var src = this.props.src;
+
+
+      if (prevProps.src !== src) {
+        if (src) {
+          this.startLoad();
+          return;
+        }
+
+        this.fail((0, _utils.configurationError)('Missing source'));
+      }
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.isActive = false;
+    }
+  }, {
+    key: 'getFile',
+    value: function getFile(callback) {
+      var _this2 = this;
+
+      var _props2 = this.props,
+          cacheGetRequests = _props2.cacheGetRequests,
+          src = _props2.src;
+
+
+      if (cacheGetRequests) {
+        if (loadedIcons[src]) {
+          var _loadedIcons$src = _slicedToArray(loadedIcons[src], 2),
+              err = _loadedIcons$src[0],
+              res = _loadedIcons$src[1];
+
+          callback(err, res, true);
+        }
+
+        if (!getRequestsByUrl[src]) {
+          getRequestsByUrl[src] = [];
+
+          http.get(src, function (err, res) {
+            getRequestsByUrl[src].forEach(function (cb) {
+              var currentSrc = _this2.props.src;
+
+              loadedIcons[src] = [err, res];
+
+              if (src === currentSrc) {
+                cb(err, res);
+              }
+            });
+          });
+        }
+
+        getRequestsByUrl[src].push(callback);
+      } else {
+        http.get(src, function (err, res) {
+          var currentSrc = _this2.props.src;
+
+
+          if (src === currentSrc) {
+            callback(err, res);
+          }
+        });
+      }
+    }
+  }, {
+    key: 'fail',
+    value: function fail(error) {
+      var onError = this.props.onError;
+
+      var status = error.isUnsupportedBrowserError ? Status.UNSUPPORTED : Status.FAILED;
+
+      /* istanbul ignore else */
+      if (this.isActive) {
+        this.setState({ status: status }, function () {
+          if (typeof onError === 'function') {
+            onError(error);
+          }
+        });
+      }
+    }
+  }, {
+    key: 'startLoad',
+    value: function startLoad() {
+      /* istanbul ignore else */
+      if (this.isActive) {
+        this.setState({
+          status: Status.LOADING
+        }, this.load);
+      }
+    }
+  }, {
+    key: 'load',
+    value: function load() {
+      var src = this.props.src;
+
+      var match = src.match(/data:image\/svg[^,]*?(;base64)?,(.*)/);
+
+      if (match) {
+        return this.handleLoad(null, {
+          text: match[1] ? atob(match[2]) : decodeURIComponent(match[2])
+        });
+      }
+
+      return this.getFile(this.handleLoad);
+    }
+  }, {
+    key: 'getClassName',
+    value: function getClassName() {
+      var status = this.state.status;
+      var className = this.props.className;
+
+      var nextClassName = 'isvg ' + status;
+
+      if (className) {
+        nextClassName += ' ' + className;
+      }
+
+      return nextClassName;
+    }
+  }, {
+    key: 'processSVG',
+    value: function processSVG(text) {
+      var _props3 = this.props,
+          uniquifyIDs = _props3.uniquifyIDs,
+          uniqueHash = _props3.uniqueHash,
+          baseURL = _props3.baseURL,
+          processSVG = _props3.processSVG;
+
+
+      var svgText = text;
+      if (processSVG) {
+        svgText = processSVG(svgText);
+      }
+
+      if (uniquifyIDs) {
+        return (0, _utils.uniquifySVGIDs)(svgText, uniqueHash || (0, _utils.randomString)(), baseURL);
+      }
+
+      return svgText;
+    }
+  }, {
+    key: 'renderContents',
+    value: function renderContents() {
+      var status = this.state.status;
+      var _props4 = this.props,
+          children = _props4.children,
+          preloader = _props4.preloader;
+
+
+      switch (status) {
+        case Status.UNSUPPORTED:
+        case Status.FAILED:
+          return children;
+        default:
+          return preloader;
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var loadedText = this.state.loadedText;
+      var _props5 = this.props,
+          style = _props5.style,
+          wrapper = _props5.wrapper;
+
+      var content = void 0;
+      var html = void 0;
+
+      if (loadedText) {
+        html = {
+          __html: this.processSVG(loadedText)
+        };
+      } else {
+        content = this.renderContents();
+      }
+
+      return wrapper({
+        style: style,
+        className: this.getClassName(),
+        dangerouslySetInnerHTML: html
+      }, content);
+    }
+  }]);
+
+  return InlineSVG;
+}(_react2.default.PureComponent);
+
+InlineSVG.propTypes = {
+  baseURL: _propTypes2.default.string,
+  cacheGetRequests: _propTypes2.default.bool,
+  children: _propTypes2.default.node,
+  className: _propTypes2.default.string,
+  onError: _propTypes2.default.func,
+  onLoad: _propTypes2.default.func,
+  preloader: _propTypes2.default.node,
+  processSVG: _propTypes2.default.func,
+  src: _propTypes2.default.string.isRequired,
+  style: _propTypes2.default.object,
+  supportTest: _propTypes2.default.func,
+  uniqueHash: _propTypes2.default.string,
+  uniquifyIDs: _propTypes2.default.bool,
+  wrapper: _propTypes2.default.func
+};
+InlineSVG.defaultProps = {
+  baseURL: '',
+  cacheGetRequests: false,
+  onLoad: function onLoad() {},
+  supportTest: _utils.isSupportedEnvironment,
+  uniquifyIDs: true,
+  wrapper: _react2.default.createFactory('span')
+};
+exports.default = InlineSVG;
+},{"./utils":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/react-inlinesvg/lib/utils.js","httpplease":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/lib/index.js","httpplease/plugins/oldiexdomain":"/Users/buriedsignals/Code/buriedsignals/node_modules/httpplease/plugins/oldiexdomain.js","prop-types":"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/index.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/react-inlinesvg/lib/utils.js":[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.configurationError = exports.unsupportedBrowserError = exports.uniquifySVGIDs = exports.randomString = exports.isSupportedEnvironment = exports.supportsInlineSVG = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _once = require('once');
+
+var _once2 = _interopRequireDefault(_once);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var supportsInlineSVG = exports.supportsInlineSVG = (0, _once2.default)(function () {
+  /* istanbul ignore next */
+  if (!document) {
+    return false;
+  }
+
+  var div = document.createElement('div');
+  div.innerHTML = '<svg />';
+  return div.firstChild && div.firstChild.namespaceURI === 'http://www.w3.org/2000/svg';
+});
+
+var isSupportedEnvironment = exports.isSupportedEnvironment = (0, _once2.default)(function () {
+  return supportsInlineSVG() && typeof window !== 'undefined' && window !== null ? window.XMLHttpRequest || window.XDomainRequest : false;
+});
+
+var randomString = exports.randomString = function randomString() {
+  var length = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 8;
+
+  var letters = 'abcdefghijklmnopqrstuvwxyz';
+  var numbers = '1234567890';
+  var charset = letters + letters.toUpperCase() + numbers;
+
+  var randomCharacter = function randomCharacter(array) {
+    return array[Math.floor(Math.random() * array.length)];
+  };
+
+  var R = '';
+  for (var i = 0; i < length; i++) {
+    R += randomCharacter(charset);
+  }
+  return R;
+};
+
+var uniquifySVGIDs = exports.uniquifySVGIDs = function () {
+  var mkAttributePattern = function mkAttributePattern(attr) {
+    return '(?:(?:\\s|\\:)' + attr + ')';
+  };
+
+  var idPattern = new RegExp('(?:(' + mkAttributePattern('id') + ')="([^"]+)")|(?:(' + mkAttributePattern('href') + '|' + mkAttributePattern('role') + '|' + mkAttributePattern('arcrole') + ')="\\#([^"]+)")|(?:="url\\(\\#([^\\)]+)\\)")|(?:url\\(\\#([^\\)]+)\\))', 'g');
+
+  return function (svgText, svgID, baseURL) {
+    var uniquifyID = function uniquifyID(id) {
+      return id + '___' + svgID;
+    };
+
+    return svgText.replace(idPattern, function (m, p1, p2, p3, p4, p5, p6) {
+      //eslint-disable-line consistent-return
+      /* istanbul ignore else */
+      if (p2) {
+        return p1 + '="' + uniquifyID(p2) + '"';
+      }
+
+      if (p4) {
+        return p3 + '="' + baseURL + '#' + uniquifyID(p4) + '"';
+      }
+
+      if (p5) {
+        return '="url(' + baseURL + '#' + uniquifyID(p5) + ')"';
+      }
+
+      if (p6) {
+        return 'url(' + baseURL + '#' + uniquifyID(p6) + ')';
+      }
+    });
+  };
+}();
+
+var InlineSVGError = function (_Error) {
+  _inherits(InlineSVGError, _Error);
+
+  function InlineSVGError(message) {
+    var _ret;
+
+    _classCallCheck(this, InlineSVGError);
+
+    var _this = _possibleConstructorReturn(this, (InlineSVGError.__proto__ || Object.getPrototypeOf(InlineSVGError)).call(this));
+
+    _this.name = 'InlineSVGError';
+    _this.isSupportedBrowser = true;
+    _this.isConfigurationError = false;
+    _this.isUnsupportedBrowserError = false;
+    _this.message = message;
+
+    return _ret = _this, _possibleConstructorReturn(_this, _ret);
+  }
+
+  return InlineSVGError;
+}(Error);
+
+var createError = function createError(message, attrs) {
+  var err = new InlineSVGError(message);
+
+  return _extends({}, err, attrs);
+};
+
+var unsupportedBrowserError = exports.unsupportedBrowserError = function unsupportedBrowserError(message) {
+  var newMessage = message;
+
+  /* istanbul ignore else */
+  if (!newMessage) {
+    newMessage = 'Unsupported Browser';
+  }
+
+  return createError(newMessage, {
+    isSupportedBrowser: false,
+    isUnsupportedBrowserError: true
+  });
+};
+
+var configurationError = exports.configurationError = function configurationError(message) {
+  return createError(message, {
+    isConfigurationError: true
+  });
+};
+},{"once":"/Users/buriedsignals/Code/buriedsignals/node_modules/once/once.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/react-tooltip/dist/index.js":[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -30459,7 +31478,51 @@ module.exports = function shimValues() {
 	return polyfill;
 };
 
-},{"./polyfill":"/Users/buriedsignals/Code/buriedsignals/node_modules/object.values/polyfill.js","define-properties":"/Users/buriedsignals/Code/buriedsignals/node_modules/define-properties/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/param-case/param-case.js":[function(require,module,exports){
+},{"./polyfill":"/Users/buriedsignals/Code/buriedsignals/node_modules/object.values/polyfill.js","define-properties":"/Users/buriedsignals/Code/buriedsignals/node_modules/define-properties/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/once/once.js":[function(require,module,exports){
+var wrappy = require('wrappy')
+module.exports = wrappy(once)
+module.exports.strict = wrappy(onceStrict)
+
+once.proto = once(function () {
+  Object.defineProperty(Function.prototype, 'once', {
+    value: function () {
+      return once(this)
+    },
+    configurable: true
+  })
+
+  Object.defineProperty(Function.prototype, 'onceStrict', {
+    value: function () {
+      return onceStrict(this)
+    },
+    configurable: true
+  })
+})
+
+function once (fn) {
+  var f = function () {
+    if (f.called) return f.value
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  f.called = false
+  return f
+}
+
+function onceStrict (fn) {
+  var f = function () {
+    if (f.called)
+      throw new Error(f.onceError)
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  var name = fn.name || 'Function wrapped with `once`'
+  f.onceError = name + " shouldn't be called more than once"
+  f.called = false
+  return f
+}
+
+},{"wrappy":"/Users/buriedsignals/Code/buriedsignals/node_modules/wrappy/wrappy.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/param-case/param-case.js":[function(require,module,exports){
 var noCase = require('no-case')
 
 /**
@@ -30842,7 +31905,687 @@ checkPropTypes.resetWarningCache = function() {
 
 module.exports = checkPropTypes;
 
-},{"./lib/ReactPropTypesSecret":"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/lib/ReactPropTypesSecret.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/lib/ReactPropTypesSecret.js":[function(require,module,exports){
+},{"./lib/ReactPropTypesSecret":"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/lib/ReactPropTypesSecret.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/factoryWithThrowingShims.js":[function(require,module,exports){
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+'use strict';
+
+var ReactPropTypesSecret = require('./lib/ReactPropTypesSecret');
+
+function emptyFunction() {}
+function emptyFunctionWithReset() {}
+emptyFunctionWithReset.resetWarningCache = emptyFunction;
+
+module.exports = function() {
+  function shim(props, propName, componentName, location, propFullName, secret) {
+    if (secret === ReactPropTypesSecret) {
+      // It is still safe when called from React.
+      return;
+    }
+    var err = new Error(
+      'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
+      'Use PropTypes.checkPropTypes() to call them. ' +
+      'Read more at http://fb.me/use-check-prop-types'
+    );
+    err.name = 'Invariant Violation';
+    throw err;
+  };
+  shim.isRequired = shim;
+  function getShim() {
+    return shim;
+  };
+  // Important!
+  // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.
+  var ReactPropTypes = {
+    array: shim,
+    bool: shim,
+    func: shim,
+    number: shim,
+    object: shim,
+    string: shim,
+    symbol: shim,
+
+    any: shim,
+    arrayOf: getShim,
+    element: shim,
+    elementType: shim,
+    instanceOf: getShim,
+    node: shim,
+    objectOf: getShim,
+    oneOf: getShim,
+    oneOfType: getShim,
+    shape: getShim,
+    exact: getShim,
+
+    checkPropTypes: emptyFunctionWithReset,
+    resetWarningCache: emptyFunction
+  };
+
+  ReactPropTypes.PropTypes = ReactPropTypes;
+
+  return ReactPropTypes;
+};
+
+},{"./lib/ReactPropTypesSecret":"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/lib/ReactPropTypesSecret.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/factoryWithTypeCheckers.js":[function(require,module,exports){
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+'use strict';
+
+var ReactIs = require('react-is');
+var assign = require('object-assign');
+
+var ReactPropTypesSecret = require('./lib/ReactPropTypesSecret');
+var checkPropTypes = require('./checkPropTypes');
+
+var has = Function.call.bind(Object.prototype.hasOwnProperty);
+var printWarning = function() {};
+
+if ("development" !== 'production') {
+  printWarning = function(text) {
+    var message = 'Warning: ' + text;
+    if (typeof console !== 'undefined') {
+      console.error(message);
+    }
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+}
+
+function emptyFunctionThatReturnsNull() {
+  return null;
+}
+
+module.exports = function(isValidElement, throwOnDirectAccess) {
+  /* global Symbol */
+  var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
+  var FAUX_ITERATOR_SYMBOL = '@@iterator'; // Before Symbol spec.
+
+  /**
+   * Returns the iterator method function contained on the iterable object.
+   *
+   * Be sure to invoke the function with the iterable as context:
+   *
+   *     var iteratorFn = getIteratorFn(myIterable);
+   *     if (iteratorFn) {
+   *       var iterator = iteratorFn.call(myIterable);
+   *       ...
+   *     }
+   *
+   * @param {?object} maybeIterable
+   * @return {?function}
+   */
+  function getIteratorFn(maybeIterable) {
+    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
+    if (typeof iteratorFn === 'function') {
+      return iteratorFn;
+    }
+  }
+
+  /**
+   * Collection of methods that allow declaration and validation of props that are
+   * supplied to React components. Example usage:
+   *
+   *   var Props = require('ReactPropTypes');
+   *   var MyArticle = React.createClass({
+   *     propTypes: {
+   *       // An optional string prop named "description".
+   *       description: Props.string,
+   *
+   *       // A required enum prop named "category".
+   *       category: Props.oneOf(['News','Photos']).isRequired,
+   *
+   *       // A prop named "dialog" that requires an instance of Dialog.
+   *       dialog: Props.instanceOf(Dialog).isRequired
+   *     },
+   *     render: function() { ... }
+   *   });
+   *
+   * A more formal specification of how these methods are used:
+   *
+   *   type := array|bool|func|object|number|string|oneOf([...])|instanceOf(...)
+   *   decl := ReactPropTypes.{type}(.isRequired)?
+   *
+   * Each and every declaration produces a function with the same signature. This
+   * allows the creation of custom validation functions. For example:
+   *
+   *  var MyLink = React.createClass({
+   *    propTypes: {
+   *      // An optional string or URI prop named "href".
+   *      href: function(props, propName, componentName) {
+   *        var propValue = props[propName];
+   *        if (propValue != null && typeof propValue !== 'string' &&
+   *            !(propValue instanceof URI)) {
+   *          return new Error(
+   *            'Expected a string or an URI for ' + propName + ' in ' +
+   *            componentName
+   *          );
+   *        }
+   *      }
+   *    },
+   *    render: function() {...}
+   *  });
+   *
+   * @internal
+   */
+
+  var ANONYMOUS = '<<anonymous>>';
+
+  // Important!
+  // Keep this list in sync with production version in `./factoryWithThrowingShims.js`.
+  var ReactPropTypes = {
+    array: createPrimitiveTypeChecker('array'),
+    bool: createPrimitiveTypeChecker('boolean'),
+    func: createPrimitiveTypeChecker('function'),
+    number: createPrimitiveTypeChecker('number'),
+    object: createPrimitiveTypeChecker('object'),
+    string: createPrimitiveTypeChecker('string'),
+    symbol: createPrimitiveTypeChecker('symbol'),
+
+    any: createAnyTypeChecker(),
+    arrayOf: createArrayOfTypeChecker,
+    element: createElementTypeChecker(),
+    elementType: createElementTypeTypeChecker(),
+    instanceOf: createInstanceTypeChecker,
+    node: createNodeChecker(),
+    objectOf: createObjectOfTypeChecker,
+    oneOf: createEnumTypeChecker,
+    oneOfType: createUnionTypeChecker,
+    shape: createShapeTypeChecker,
+    exact: createStrictShapeTypeChecker,
+  };
+
+  /**
+   * inlined Object.is polyfill to avoid requiring consumers ship their own
+   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+   */
+  /*eslint-disable no-self-compare*/
+  function is(x, y) {
+    // SameValue algorithm
+    if (x === y) {
+      // Steps 1-5, 7-10
+      // Steps 6.b-6.e: +0 != -0
+      return x !== 0 || 1 / x === 1 / y;
+    } else {
+      // Step 6.a: NaN == NaN
+      return x !== x && y !== y;
+    }
+  }
+  /*eslint-enable no-self-compare*/
+
+  /**
+   * We use an Error-like object for backward compatibility as people may call
+   * PropTypes directly and inspect their output. However, we don't use real
+   * Errors anymore. We don't inspect their stack anyway, and creating them
+   * is prohibitively expensive if they are created too often, such as what
+   * happens in oneOfType() for any type before the one that matched.
+   */
+  function PropTypeError(message) {
+    this.message = message;
+    this.stack = '';
+  }
+  // Make `instanceof Error` still work for returned errors.
+  PropTypeError.prototype = Error.prototype;
+
+  function createChainableTypeChecker(validate) {
+    if ("development" !== 'production') {
+      var manualPropTypeCallCache = {};
+      var manualPropTypeWarningCount = 0;
+    }
+    function checkType(isRequired, props, propName, componentName, location, propFullName, secret) {
+      componentName = componentName || ANONYMOUS;
+      propFullName = propFullName || propName;
+
+      if (secret !== ReactPropTypesSecret) {
+        if (throwOnDirectAccess) {
+          // New behavior only for users of `prop-types` package
+          var err = new Error(
+            'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
+            'Use `PropTypes.checkPropTypes()` to call them. ' +
+            'Read more at http://fb.me/use-check-prop-types'
+          );
+          err.name = 'Invariant Violation';
+          throw err;
+        } else if ("development" !== 'production' && typeof console !== 'undefined') {
+          // Old behavior for people using React.PropTypes
+          var cacheKey = componentName + ':' + propName;
+          if (
+            !manualPropTypeCallCache[cacheKey] &&
+            // Avoid spamming the console because they are often not actionable except for lib authors
+            manualPropTypeWarningCount < 3
+          ) {
+            printWarning(
+              'You are manually calling a React.PropTypes validation ' +
+              'function for the `' + propFullName + '` prop on `' + componentName  + '`. This is deprecated ' +
+              'and will throw in the standalone `prop-types` package. ' +
+              'You may be seeing this warning due to a third-party PropTypes ' +
+              'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.'
+            );
+            manualPropTypeCallCache[cacheKey] = true;
+            manualPropTypeWarningCount++;
+          }
+        }
+      }
+      if (props[propName] == null) {
+        if (isRequired) {
+          if (props[propName] === null) {
+            return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
+          }
+          return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required in ' + ('`' + componentName + '`, but its value is `undefined`.'));
+        }
+        return null;
+      } else {
+        return validate(props, propName, componentName, location, propFullName);
+      }
+    }
+
+    var chainedCheckType = checkType.bind(null, false);
+    chainedCheckType.isRequired = checkType.bind(null, true);
+
+    return chainedCheckType;
+  }
+
+  function createPrimitiveTypeChecker(expectedType) {
+    function validate(props, propName, componentName, location, propFullName, secret) {
+      var propValue = props[propName];
+      var propType = getPropType(propValue);
+      if (propType !== expectedType) {
+        // `propValue` being instance of, say, date/regexp, pass the 'object'
+        // check, but we can offer a more precise error message here rather than
+        // 'of type `object`'.
+        var preciseType = getPreciseType(propValue);
+
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'));
+      }
+      return null;
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createAnyTypeChecker() {
+    return createChainableTypeChecker(emptyFunctionThatReturnsNull);
+  }
+
+  function createArrayOfTypeChecker(typeChecker) {
+    function validate(props, propName, componentName, location, propFullName) {
+      if (typeof typeChecker !== 'function') {
+        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside arrayOf.');
+      }
+      var propValue = props[propName];
+      if (!Array.isArray(propValue)) {
+        var propType = getPropType(propValue);
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
+      }
+      for (var i = 0; i < propValue.length; i++) {
+        var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret);
+        if (error instanceof Error) {
+          return error;
+        }
+      }
+      return null;
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createElementTypeChecker() {
+    function validate(props, propName, componentName, location, propFullName) {
+      var propValue = props[propName];
+      if (!isValidElement(propValue)) {
+        var propType = getPropType(propValue);
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement.'));
+      }
+      return null;
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createElementTypeTypeChecker() {
+    function validate(props, propName, componentName, location, propFullName) {
+      var propValue = props[propName];
+      if (!ReactIs.isValidElementType(propValue)) {
+        var propType = getPropType(propValue);
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement type.'));
+      }
+      return null;
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createInstanceTypeChecker(expectedClass) {
+    function validate(props, propName, componentName, location, propFullName) {
+      if (!(props[propName] instanceof expectedClass)) {
+        var expectedClassName = expectedClass.name || ANONYMOUS;
+        var actualClassName = getClassName(props[propName]);
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + actualClassName + '` supplied to `' + componentName + '`, expected ') + ('instance of `' + expectedClassName + '`.'));
+      }
+      return null;
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createEnumTypeChecker(expectedValues) {
+    if (!Array.isArray(expectedValues)) {
+      if ("development" !== 'production') {
+        if (arguments.length > 1) {
+          printWarning(
+            'Invalid arguments supplied to oneOf, expected an array, got ' + arguments.length + ' arguments. ' +
+            'A common mistake is to write oneOf(x, y, z) instead of oneOf([x, y, z]).'
+          );
+        } else {
+          printWarning('Invalid argument supplied to oneOf, expected an array.');
+        }
+      }
+      return emptyFunctionThatReturnsNull;
+    }
+
+    function validate(props, propName, componentName, location, propFullName) {
+      var propValue = props[propName];
+      for (var i = 0; i < expectedValues.length; i++) {
+        if (is(propValue, expectedValues[i])) {
+          return null;
+        }
+      }
+
+      var valuesString = JSON.stringify(expectedValues, function replacer(key, value) {
+        var type = getPreciseType(value);
+        if (type === 'symbol') {
+          return String(value);
+        }
+        return value;
+      });
+      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + String(propValue) + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createObjectOfTypeChecker(typeChecker) {
+    function validate(props, propName, componentName, location, propFullName) {
+      if (typeof typeChecker !== 'function') {
+        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside objectOf.');
+      }
+      var propValue = props[propName];
+      var propType = getPropType(propValue);
+      if (propType !== 'object') {
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
+      }
+      for (var key in propValue) {
+        if (has(propValue, key)) {
+          var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+          if (error instanceof Error) {
+            return error;
+          }
+        }
+      }
+      return null;
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createUnionTypeChecker(arrayOfTypeCheckers) {
+    if (!Array.isArray(arrayOfTypeCheckers)) {
+      "development" !== 'production' ? printWarning('Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
+      return emptyFunctionThatReturnsNull;
+    }
+
+    for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
+      var checker = arrayOfTypeCheckers[i];
+      if (typeof checker !== 'function') {
+        printWarning(
+          'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' +
+          'received ' + getPostfixForTypeWarning(checker) + ' at index ' + i + '.'
+        );
+        return emptyFunctionThatReturnsNull;
+      }
+    }
+
+    function validate(props, propName, componentName, location, propFullName) {
+      for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
+        var checker = arrayOfTypeCheckers[i];
+        if (checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret) == null) {
+          return null;
+        }
+      }
+
+      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`.'));
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createNodeChecker() {
+    function validate(props, propName, componentName, location, propFullName) {
+      if (!isNode(props[propName])) {
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`, expected a ReactNode.'));
+      }
+      return null;
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createShapeTypeChecker(shapeTypes) {
+    function validate(props, propName, componentName, location, propFullName) {
+      var propValue = props[propName];
+      var propType = getPropType(propValue);
+      if (propType !== 'object') {
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+      }
+      for (var key in shapeTypes) {
+        var checker = shapeTypes[key];
+        if (!checker) {
+          continue;
+        }
+        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+        if (error) {
+          return error;
+        }
+      }
+      return null;
+    }
+    return createChainableTypeChecker(validate);
+  }
+
+  function createStrictShapeTypeChecker(shapeTypes) {
+    function validate(props, propName, componentName, location, propFullName) {
+      var propValue = props[propName];
+      var propType = getPropType(propValue);
+      if (propType !== 'object') {
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+      }
+      // We need to check all keys in case some are required but missing from
+      // props.
+      var allKeys = assign({}, props[propName], shapeTypes);
+      for (var key in allKeys) {
+        var checker = shapeTypes[key];
+        if (!checker) {
+          return new PropTypeError(
+            'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
+            '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
+            '\nValid keys: ' +  JSON.stringify(Object.keys(shapeTypes), null, '  ')
+          );
+        }
+        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+        if (error) {
+          return error;
+        }
+      }
+      return null;
+    }
+
+    return createChainableTypeChecker(validate);
+  }
+
+  function isNode(propValue) {
+    switch (typeof propValue) {
+      case 'number':
+      case 'string':
+      case 'undefined':
+        return true;
+      case 'boolean':
+        return !propValue;
+      case 'object':
+        if (Array.isArray(propValue)) {
+          return propValue.every(isNode);
+        }
+        if (propValue === null || isValidElement(propValue)) {
+          return true;
+        }
+
+        var iteratorFn = getIteratorFn(propValue);
+        if (iteratorFn) {
+          var iterator = iteratorFn.call(propValue);
+          var step;
+          if (iteratorFn !== propValue.entries) {
+            while (!(step = iterator.next()).done) {
+              if (!isNode(step.value)) {
+                return false;
+              }
+            }
+          } else {
+            // Iterator will provide entry [k,v] tuples rather than values.
+            while (!(step = iterator.next()).done) {
+              var entry = step.value;
+              if (entry) {
+                if (!isNode(entry[1])) {
+                  return false;
+                }
+              }
+            }
+          }
+        } else {
+          return false;
+        }
+
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  function isSymbol(propType, propValue) {
+    // Native Symbol.
+    if (propType === 'symbol') {
+      return true;
+    }
+
+    // falsy value can't be a Symbol
+    if (!propValue) {
+      return false;
+    }
+
+    // 19.4.3.5 Symbol.prototype[@@toStringTag] === 'Symbol'
+    if (propValue['@@toStringTag'] === 'Symbol') {
+      return true;
+    }
+
+    // Fallback for non-spec compliant Symbols which are polyfilled.
+    if (typeof Symbol === 'function' && propValue instanceof Symbol) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // Equivalent of `typeof` but with special handling for array and regexp.
+  function getPropType(propValue) {
+    var propType = typeof propValue;
+    if (Array.isArray(propValue)) {
+      return 'array';
+    }
+    if (propValue instanceof RegExp) {
+      // Old webkits (at least until Android 4.0) return 'function' rather than
+      // 'object' for typeof a RegExp. We'll normalize this here so that /bla/
+      // passes PropTypes.object.
+      return 'object';
+    }
+    if (isSymbol(propType, propValue)) {
+      return 'symbol';
+    }
+    return propType;
+  }
+
+  // This handles more types than `getPropType`. Only used for error messages.
+  // See `createPrimitiveTypeChecker`.
+  function getPreciseType(propValue) {
+    if (typeof propValue === 'undefined' || propValue === null) {
+      return '' + propValue;
+    }
+    var propType = getPropType(propValue);
+    if (propType === 'object') {
+      if (propValue instanceof Date) {
+        return 'date';
+      } else if (propValue instanceof RegExp) {
+        return 'regexp';
+      }
+    }
+    return propType;
+  }
+
+  // Returns a string that is postfixed to a warning about an invalid type.
+  // For example, "undefined" or "of type array"
+  function getPostfixForTypeWarning(value) {
+    var type = getPreciseType(value);
+    switch (type) {
+      case 'array':
+      case 'object':
+        return 'an ' + type;
+      case 'boolean':
+      case 'date':
+      case 'regexp':
+        return 'a ' + type;
+      default:
+        return type;
+    }
+  }
+
+  // Returns class name of the object, if any.
+  function getClassName(propValue) {
+    if (!propValue.constructor || !propValue.constructor.name) {
+      return ANONYMOUS;
+    }
+    return propValue.constructor.name;
+  }
+
+  ReactPropTypes.checkPropTypes = checkPropTypes;
+  ReactPropTypes.resetWarningCache = checkPropTypes.resetWarningCache;
+  ReactPropTypes.PropTypes = ReactPropTypes;
+
+  return ReactPropTypes;
+};
+
+},{"./checkPropTypes":"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/checkPropTypes.js","./lib/ReactPropTypesSecret":"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/lib/ReactPropTypesSecret.js","object-assign":"/Users/buriedsignals/Code/buriedsignals/node_modules/object-assign/index.js","react-is":"/Users/buriedsignals/Code/buriedsignals/node_modules/react-is/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/index.js":[function(require,module,exports){
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+if ("development" !== 'production') {
+  var ReactIs = require('react-is');
+
+  // By explicitly using `prop-types` you are opting into new development behavior.
+  // http://fb.me/prop-types-in-prod
+  var throwOnDirectAccess = true;
+  module.exports = require('./factoryWithTypeCheckers')(ReactIs.isElement, throwOnDirectAccess);
+} else {
+  // By explicitly using `prop-types` you are opting into new production behavior.
+  // http://fb.me/prop-types-in-prod
+  module.exports = require('./factoryWithThrowingShims')();
+}
+
+},{"./factoryWithThrowingShims":"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/factoryWithThrowingShims.js","./factoryWithTypeCheckers":"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/factoryWithTypeCheckers.js","react-is":"/Users/buriedsignals/Code/buriedsignals/node_modules/react-is/index.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/lib/ReactPropTypesSecret.js":[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -31055,7 +32798,220 @@ module.exports = ReactPropTypesSecret;
 
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/react/cjs/react.development.js":[function(require,module,exports){
+},{"react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/react-is/cjs/react-is.development.js":[function(require,module,exports){
+(function (process){(function (){
+/** @license React v16.13.1
+ * react-is.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+'use strict';
+
+
+
+if (process.env.NODE_ENV !== "production") {
+  (function() {
+'use strict';
+
+// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
+// nor polyfill, then a plain number is used for performance.
+var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
+var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
+var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
+var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
+var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
+var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
+var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
+// (unstable) APIs that have been removed. Can we remove the symbols?
+
+var REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for('react.async_mode') : 0xeacf;
+var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
+var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
+var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
+var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
+var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
+var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
+var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
+var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
+var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
+var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
+
+function isValidElementType(type) {
+  return typeof type === 'string' || typeof type === 'function' || // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
+  type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE || type.$$typeof === REACT_BLOCK_TYPE);
+}
+
+function typeOf(object) {
+  if (typeof object === 'object' && object !== null) {
+    var $$typeof = object.$$typeof;
+
+    switch ($$typeof) {
+      case REACT_ELEMENT_TYPE:
+        var type = object.type;
+
+        switch (type) {
+          case REACT_ASYNC_MODE_TYPE:
+          case REACT_CONCURRENT_MODE_TYPE:
+          case REACT_FRAGMENT_TYPE:
+          case REACT_PROFILER_TYPE:
+          case REACT_STRICT_MODE_TYPE:
+          case REACT_SUSPENSE_TYPE:
+            return type;
+
+          default:
+            var $$typeofType = type && type.$$typeof;
+
+            switch ($$typeofType) {
+              case REACT_CONTEXT_TYPE:
+              case REACT_FORWARD_REF_TYPE:
+              case REACT_LAZY_TYPE:
+              case REACT_MEMO_TYPE:
+              case REACT_PROVIDER_TYPE:
+                return $$typeofType;
+
+              default:
+                return $$typeof;
+            }
+
+        }
+
+      case REACT_PORTAL_TYPE:
+        return $$typeof;
+    }
+  }
+
+  return undefined;
+} // AsyncMode is deprecated along with isAsyncMode
+
+var AsyncMode = REACT_ASYNC_MODE_TYPE;
+var ConcurrentMode = REACT_CONCURRENT_MODE_TYPE;
+var ContextConsumer = REACT_CONTEXT_TYPE;
+var ContextProvider = REACT_PROVIDER_TYPE;
+var Element = REACT_ELEMENT_TYPE;
+var ForwardRef = REACT_FORWARD_REF_TYPE;
+var Fragment = REACT_FRAGMENT_TYPE;
+var Lazy = REACT_LAZY_TYPE;
+var Memo = REACT_MEMO_TYPE;
+var Portal = REACT_PORTAL_TYPE;
+var Profiler = REACT_PROFILER_TYPE;
+var StrictMode = REACT_STRICT_MODE_TYPE;
+var Suspense = REACT_SUSPENSE_TYPE;
+var hasWarnedAboutDeprecatedIsAsyncMode = false; // AsyncMode should be deprecated
+
+function isAsyncMode(object) {
+  {
+    if (!hasWarnedAboutDeprecatedIsAsyncMode) {
+      hasWarnedAboutDeprecatedIsAsyncMode = true; // Using console['warn'] to evade Babel and ESLint
+
+      console['warn']('The ReactIs.isAsyncMode() alias has been deprecated, ' + 'and will be removed in React 17+. Update your code to use ' + 'ReactIs.isConcurrentMode() instead. It has the exact same API.');
+    }
+  }
+
+  return isConcurrentMode(object) || typeOf(object) === REACT_ASYNC_MODE_TYPE;
+}
+function isConcurrentMode(object) {
+  return typeOf(object) === REACT_CONCURRENT_MODE_TYPE;
+}
+function isContextConsumer(object) {
+  return typeOf(object) === REACT_CONTEXT_TYPE;
+}
+function isContextProvider(object) {
+  return typeOf(object) === REACT_PROVIDER_TYPE;
+}
+function isElement(object) {
+  return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+}
+function isForwardRef(object) {
+  return typeOf(object) === REACT_FORWARD_REF_TYPE;
+}
+function isFragment(object) {
+  return typeOf(object) === REACT_FRAGMENT_TYPE;
+}
+function isLazy(object) {
+  return typeOf(object) === REACT_LAZY_TYPE;
+}
+function isMemo(object) {
+  return typeOf(object) === REACT_MEMO_TYPE;
+}
+function isPortal(object) {
+  return typeOf(object) === REACT_PORTAL_TYPE;
+}
+function isProfiler(object) {
+  return typeOf(object) === REACT_PROFILER_TYPE;
+}
+function isStrictMode(object) {
+  return typeOf(object) === REACT_STRICT_MODE_TYPE;
+}
+function isSuspense(object) {
+  return typeOf(object) === REACT_SUSPENSE_TYPE;
+}
+
+exports.AsyncMode = AsyncMode;
+exports.ConcurrentMode = ConcurrentMode;
+exports.ContextConsumer = ContextConsumer;
+exports.ContextProvider = ContextProvider;
+exports.Element = Element;
+exports.ForwardRef = ForwardRef;
+exports.Fragment = Fragment;
+exports.Lazy = Lazy;
+exports.Memo = Memo;
+exports.Portal = Portal;
+exports.Profiler = Profiler;
+exports.StrictMode = StrictMode;
+exports.Suspense = Suspense;
+exports.isAsyncMode = isAsyncMode;
+exports.isConcurrentMode = isConcurrentMode;
+exports.isContextConsumer = isContextConsumer;
+exports.isContextProvider = isContextProvider;
+exports.isElement = isElement;
+exports.isForwardRef = isForwardRef;
+exports.isFragment = isFragment;
+exports.isLazy = isLazy;
+exports.isMemo = isMemo;
+exports.isPortal = isPortal;
+exports.isProfiler = isProfiler;
+exports.isStrictMode = isStrictMode;
+exports.isSuspense = isSuspense;
+exports.isValidElementType = isValidElementType;
+exports.typeOf = typeOf;
+  })();
+}
+
+}).call(this)}).call(this,require('_process'))
+},{"_process":"/Users/buriedsignals/Code/buriedsignals/node_modules/process/browser.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/react-is/cjs/react-is.production.min.js":[function(require,module,exports){
+/** @license React v16.13.1
+ * react-is.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+'use strict';var b="function"===typeof Symbol&&Symbol.for,c=b?Symbol.for("react.element"):60103,d=b?Symbol.for("react.portal"):60106,e=b?Symbol.for("react.fragment"):60107,f=b?Symbol.for("react.strict_mode"):60108,g=b?Symbol.for("react.profiler"):60114,h=b?Symbol.for("react.provider"):60109,k=b?Symbol.for("react.context"):60110,l=b?Symbol.for("react.async_mode"):60111,m=b?Symbol.for("react.concurrent_mode"):60111,n=b?Symbol.for("react.forward_ref"):60112,p=b?Symbol.for("react.suspense"):60113,q=b?
+Symbol.for("react.suspense_list"):60120,r=b?Symbol.for("react.memo"):60115,t=b?Symbol.for("react.lazy"):60116,v=b?Symbol.for("react.block"):60121,w=b?Symbol.for("react.fundamental"):60117,x=b?Symbol.for("react.responder"):60118,y=b?Symbol.for("react.scope"):60119;
+function z(a){if("object"===typeof a&&null!==a){var u=a.$$typeof;switch(u){case c:switch(a=a.type,a){case l:case m:case e:case g:case f:case p:return a;default:switch(a=a&&a.$$typeof,a){case k:case n:case t:case r:case h:return a;default:return u}}case d:return u}}}function A(a){return z(a)===m}exports.AsyncMode=l;exports.ConcurrentMode=m;exports.ContextConsumer=k;exports.ContextProvider=h;exports.Element=c;exports.ForwardRef=n;exports.Fragment=e;exports.Lazy=t;exports.Memo=r;exports.Portal=d;
+exports.Profiler=g;exports.StrictMode=f;exports.Suspense=p;exports.isAsyncMode=function(a){return A(a)||z(a)===l};exports.isConcurrentMode=A;exports.isContextConsumer=function(a){return z(a)===k};exports.isContextProvider=function(a){return z(a)===h};exports.isElement=function(a){return"object"===typeof a&&null!==a&&a.$$typeof===c};exports.isForwardRef=function(a){return z(a)===n};exports.isFragment=function(a){return z(a)===e};exports.isLazy=function(a){return z(a)===t};
+exports.isMemo=function(a){return z(a)===r};exports.isPortal=function(a){return z(a)===d};exports.isProfiler=function(a){return z(a)===g};exports.isStrictMode=function(a){return z(a)===f};exports.isSuspense=function(a){return z(a)===p};
+exports.isValidElementType=function(a){return"string"===typeof a||"function"===typeof a||a===e||a===m||a===g||a===f||a===p||a===q||"object"===typeof a&&null!==a&&(a.$$typeof===t||a.$$typeof===r||a.$$typeof===h||a.$$typeof===k||a.$$typeof===n||a.$$typeof===w||a.$$typeof===x||a.$$typeof===y||a.$$typeof===v)};exports.typeOf=z;
+
+},{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/react-is/index.js":[function(require,module,exports){
+(function (process){(function (){
+'use strict';
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports = require('./cjs/react-is.production.min.js');
+} else {
+  module.exports = require('./cjs/react-is.development.js');
+}
+
+}).call(this)}).call(this,require('_process'))
+},{"./cjs/react-is.development.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/react-is/cjs/react-is.development.js","./cjs/react-is.production.min.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/react-is/cjs/react-is.production.min.js","_process":"/Users/buriedsignals/Code/buriedsignals/node_modules/process/browser.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/react/cjs/react.development.js":[function(require,module,exports){
 /** @license React v16.0.0
  * react.development.js
  *
@@ -38050,6 +40006,73 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 
+},{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/urllite/lib/core.js":[function(require,module,exports){
+(function() {
+  var URL, URL_PATTERN, defaults, urllite,
+    __hasProp = {}.hasOwnProperty;
+
+  URL_PATTERN = /^(?:(?:([^:\/?\#]+:)\/+|(\/\/))(?:([a-z0-9-\._~%]+)(?::([a-z0-9-\._~%]+))?@)?(([a-z0-9-\._~%!$&'()*+,;=]+)(?::([0-9]+))?)?)?([^?\#]*?)(\?[^\#]*)?(\#.*)?$/;
+
+  urllite = function(raw, opts) {
+    return urllite.URL.parse(raw, opts);
+  };
+
+  urllite.URL = URL = (function() {
+    function URL(props) {
+      var k, v, _ref;
+      for (k in defaults) {
+        if (!__hasProp.call(defaults, k)) continue;
+        v = defaults[k];
+        this[k] = (_ref = props[k]) != null ? _ref : v;
+      }
+      this.host || (this.host = this.hostname && this.port ? "" + this.hostname + ":" + this.port : this.hostname ? this.hostname : '');
+      this.origin || (this.origin = this.protocol ? "" + this.protocol + "//" + this.host : '');
+      this.isAbsolutePathRelative = !this.host && this.pathname.charAt(0) === '/';
+      this.isPathRelative = !this.host && this.pathname.charAt(0) !== '/';
+      this.isRelative = this.isSchemeRelative || this.isAbsolutePathRelative || this.isPathRelative;
+      this.isAbsolute = !this.isRelative;
+    }
+
+    URL.parse = function(raw) {
+      var m, pathname, protocol;
+      m = raw.toString().match(URL_PATTERN);
+      pathname = m[8] || '';
+      protocol = m[1];
+      return new urllite.URL({
+        protocol: protocol,
+        username: m[3],
+        password: m[4],
+        hostname: m[6],
+        port: m[7],
+        pathname: protocol && pathname.charAt(0) !== '/' ? "/" + pathname : pathname,
+        search: m[9],
+        hash: m[10],
+        isSchemeRelative: m[2] != null
+      });
+    };
+
+    return URL;
+
+  })();
+
+  defaults = {
+    protocol: '',
+    username: '',
+    password: '',
+    host: '',
+    hostname: '',
+    port: '',
+    pathname: '',
+    search: '',
+    hash: '',
+    origin: '',
+    isSchemeRelative: false
+  };
+
+  module.exports = urllite;
+
+}).call(this);
+
 },{}],"/Users/buriedsignals/Code/buriedsignals/node_modules/util-deprecate/browser.js":[function(require,module,exports){
 (function (global){(function (){
 
@@ -38743,7 +40766,42 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":"/Users/buriedsignals/Code/buriedsignals/node_modules/util/support/isBufferBrowser.js","_process":"/Users/buriedsignals/Code/buriedsignals/node_modules/process/browser.js","inherits":"/Users/buriedsignals/Code/buriedsignals/node_modules/util/node_modules/inherits/inherits_browser.js"}],"/Users/buriedsignals/Code/node_modules/object-assign/index.js":[function(require,module,exports){
+},{"./support/isBuffer":"/Users/buriedsignals/Code/buriedsignals/node_modules/util/support/isBufferBrowser.js","_process":"/Users/buriedsignals/Code/buriedsignals/node_modules/process/browser.js","inherits":"/Users/buriedsignals/Code/buriedsignals/node_modules/util/node_modules/inherits/inherits_browser.js"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/wrappy/wrappy.js":[function(require,module,exports){
+// Returns a wrapper function that returns a wrapped callback
+// The wrapper function should do some stuff, and return a
+// presumably different callback function.
+// This makes sure that own properties are retained, so that
+// decorations and such are not lost along the way.
+module.exports = wrappy
+function wrappy (fn, cb) {
+  if (fn && cb) return wrappy(fn)(cb)
+
+  if (typeof fn !== 'function')
+    throw new TypeError('need wrapper function')
+
+  Object.keys(fn).forEach(function (k) {
+    wrapper[k] = fn[k]
+  })
+
+  return wrapper
+
+  function wrapper() {
+    var args = new Array(arguments.length)
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i]
+    }
+    var ret = fn.apply(this, args)
+    var cb = args[args.length-1]
+    if (typeof ret === 'function' && ret !== cb) {
+      Object.keys(cb).forEach(function (k) {
+        ret[k] = cb[k]
+      })
+    }
+    return ret
+  }
+}
+
+},{}],"/Users/buriedsignals/Code/node_modules/object-assign/index.js":[function(require,module,exports){
 arguments[4]["/Users/buriedsignals/Code/buriedsignals/node_modules/object-assign/index.js"][0].apply(exports,arguments)
 },{}],"/Users/buriedsignals/Code/node_modules/prop-types/checkPropTypes.js":[function(require,module,exports){
 arguments[4]["/Users/buriedsignals/Code/buriedsignals/node_modules/prop-types/checkPropTypes.js"][0].apply(exports,arguments)
@@ -65324,7 +67382,7 @@ if ("development" === 'production') {
 },{"./cjs/scheduler-tracing.development.js":"/Users/buriedsignals/Code/node_modules/scheduler/cjs/scheduler-tracing.development.js","./cjs/scheduler-tracing.production.min.js":"/Users/buriedsignals/Code/node_modules/scheduler/cjs/scheduler-tracing.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "id": 2, "type": "component", "name": "TextContainer", "children": [{ "id": 3, "type": "meta", "properties": { "title": { "type": "value", "value": "Buried Signals" }, "description": { "type": "value", "value": "Short description of your project" } } }] }, { "id": 4, "type": "component", "name": "Nav", "children": [] }, { "id": 5, "type": "component", "name": "TextContainer", "children": [{ "id": 6, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "page-container" } }, "children": [{ "id": 7, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "index-header" } }, "children": [{ "id": 8, "type": "component", "name": "h1", "children": [{ "id": 9, "type": "textnode", "value": "Buried Signals" }] }, { "id": 10, "type": "component", "name": "hr", "properties": { "className": { "type": "value", "value": "soft-separator" } }, "children": [] }] }, { "id": 11, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "articles-container" } }, "children": [{ "id": 12, "type": "component", "name": "h2", "children": [{ "id": 13, "type": "textnode", "value": "VISUAL ESSAYS" }] }] }] }, { "id": 14, "type": "component", "name": "Footer", "children": [] }] }] };
+module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "id": 2, "type": "component", "name": "TextContainer", "children": [{ "id": 3, "type": "meta", "properties": { "title": { "type": "value", "value": "Buried Signals" }, "description": { "type": "value", "value": "Experiments in visual storytelling." } } }] }, { "id": 4, "type": "component", "name": "Nav", "children": [] }, { "id": 5, "type": "component", "name": "TextContainer", "children": [{ "id": 6, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "page-container" } }, "children": [{ "id": 7, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "index-header" } }, "children": [{ "id": 8, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "logo-container" } }, "children": [{ "id": 9, "type": "component", "name": "SVG", "properties": { "src": { "type": "value", "value": "static/images/parasite.svg" }, "className": { "type": "value", "value": "logo-svg" } }, "children": [] }] }, { "id": 10, "type": "component", "name": "h4", "children": [{ "id": 11, "type": "textnode", "value": "Experiments in visual storytelling" }] }, { "id": 12, "type": "component", "name": "hr", "properties": { "className": { "type": "value", "value": "soft-separator" } }, "children": [] }] }, { "id": 13, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "articles-container" } }, "children": [{ "id": 14, "type": "component", "name": "h2", "children": [{ "id": 15, "type": "textnode", "value": "LATEST" }] }] }] }, { "id": 16, "type": "component", "name": "Footer", "children": [] }] }] };
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
@@ -65332,12 +67390,13 @@ module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "
 module.exports = {
 	'text-container': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js'),
 	'nav': require('/Users/buriedsignals/Code/buriedsignals/components/nav.js'),
-	'h1': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js'),
+	'svg': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js'),
+	'h4': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js'),
 	'h2': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js'),
 	'footer': require('/Users/buriedsignals/Code/buriedsignals/components/footer.js')
 };
 
-},{"/Users/buriedsignals/Code/buriedsignals/components/footer.js":"/Users/buriedsignals/Code/buriedsignals/components/footer.js","/Users/buriedsignals/Code/buriedsignals/components/nav.js":"/Users/buriedsignals/Code/buriedsignals/components/nav.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h1.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js"}],"__IDYLL_CONTEXT__":[function(require,module,exports){
+},{"/Users/buriedsignals/Code/buriedsignals/components/footer.js":"/Users/buriedsignals/Code/buriedsignals/components/footer.js","/Users/buriedsignals/Code/buriedsignals/components/nav.js":"/Users/buriedsignals/Code/buriedsignals/components/nav.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js"}],"__IDYLL_CONTEXT__":[function(require,module,exports){
 
 module.exports = function () {
 
