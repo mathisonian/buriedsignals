@@ -1,4 +1,27 @@
-require=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/Users/buriedsignals/Code/buriedsignals/components/footer.js":[function(require,module,exports){
+require=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({"/Users/buriedsignals/Code/buriedsignals/components/articles.js":[function(require,module,exports){
+'use strict';
+
+var ARTICLES = [{
+  title: 'Yemen',
+  titleBreaks: ['Yemen'],
+  contributors: 'Valentin Hauthuille',
+  slug: 'yemen',
+  description: 'Proxies in the Middle Eastern Cold War.',
+  interactive: true,
+  category: 'journalism'
+}, {
+  title: 'Stella',
+  titleBreaks: ['Stella'],
+  contributors: '',
+  slug: 'stella',
+  description: 'The galactic ambassador' + "'s daughter visits earth.",
+  interactive: false,
+  category: 'fiction'
+}];
+
+module.exports = ARTICLES;
+
+},{}],"/Users/buriedsignals/Code/buriedsignals/components/footer.js":[function(require,module,exports){
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -142,12 +165,9 @@ var Nav = function (_React$PureComponent) {
     _createClass(Nav, [{
         key: "sideDrawerToggleHandler",
         value: function sideDrawerToggleHandler() {
-            console.log(this.state.showSideDrawer);
             this.setState({
                 showSideDrawer: !this.state.showSideDrawer
             });
-            console.log("*****");
-            console.log(this.state.showSideDrawer);
             this.toggleHamburger();
         }
     }, {
@@ -261,7 +281,168 @@ var Nav = function (_React$PureComponent) {
 
 module.exports = Nav;
 
-},{"react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/acorn/dist/acorn.js":[function(require,module,exports){
+},{"react":"react"}],"/Users/buriedsignals/Code/buriedsignals/components/posts.js":[function(require,module,exports){
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _articles = require("./articles");
+
+var _articles2 = _interopRequireDefault(_articles);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var React = require('react');
+
+var Posts = function (_React$PureComponent) {
+    _inherits(Posts, _React$PureComponent);
+
+    function Posts(props) {
+        _classCallCheck(this, Posts);
+
+        var _this = _possibleConstructorReturn(this, (Posts.__proto__ || Object.getPrototypeOf(Posts)).call(this, props));
+
+        _this.toggleInteractive = _this.toggleInteractive.bind(_this);
+        return _this;
+    }
+
+    _createClass(Posts, [{
+        key: "toggleInteractive",
+        value: function toggleInteractive(article) {
+            if (article.interactive) {
+                return React.createElement(
+                    "div",
+                    { className: "interactive-icon" },
+                    React.createElement("img", null)
+                );
+            } else {
+                return null;
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            var articles = _articles2.default;
+            return React.createElement(
+                "div",
+                { className: "articles-list" },
+                React.createElement(
+                    "div",
+                    { className: "article-wrapper" },
+                    React.createElement(
+                        "div",
+                        { className: "article-labels" },
+                        this.toggleInteractive(articles[0]),
+                        React.createElement(
+                            "p",
+                            null,
+                            articles[0].category
+                        )
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "article-title" },
+                        React.createElement(
+                            "a",
+                            { href: "" + articles[0].slug },
+                            React.createElement(
+                                "h2",
+                                null,
+                                articles[0].title
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "article-description" },
+                        articles[0].description + " ",
+                        React.createElement(
+                            "a",
+                            { href: "" + articles[0].slug },
+                            "Continue reading"
+                        )
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "article-contributors" },
+                        articles[0].contributors
+                    ),
+                    React.createElement("hr", { className: "article-divider" })
+                ),
+                React.createElement(
+                    "div",
+                    { className: "article-wrapper" },
+                    React.createElement(
+                        "div",
+                        { className: "article-labels" },
+                        this.toggleInteractive(articles[1]),
+                        React.createElement(
+                            "p",
+                            null,
+                            articles[1].category
+                        )
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "article-title" },
+                        React.createElement(
+                            "a",
+                            { href: "" + articles[1].slug },
+                            React.createElement(
+                                "h2",
+                                null,
+                                articles[1].title
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "article-description" },
+                        articles[1].description + " ",
+                        React.createElement(
+                            "a",
+                            { href: "" + articles[0].slug },
+                            "Continue reading"
+                        )
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "article-contributors" },
+                        articles[1].contributors
+                    ),
+                    React.createElement("hr", { className: "article-divider" })
+                )
+            );
+        }
+    }]);
+
+    return Posts;
+}(React.PureComponent);
+
+module.exports = Posts;
+
+// [div className:"articles-list" ]
+// [div className:"article-link-container"]
+// [`if (articles[0].interactive`]
+// [/]
+//   [div className:"article-title"] 
+//     [a href:`"./" + articles[0].slug + "/"`]
+//       [Display value:`articles[0].title` /]
+//     [/a]
+//     [Display value:`articles[0].description` /]
+//   [/div]
+//   [div className:"article-authors"]
+//     [Display value:`articles[0].author` /]
+//   [/div]
+// [/div]
+
+},{"./articles":"/Users/buriedsignals/Code/buriedsignals/components/articles.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/acorn/dist/acorn.js":[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -20930,47 +21111,7 @@ var GenerateHeaders = function GenerateHeaders(props) {
 };
 
 exports.default = GenerateHeaders;
-},{"react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js":[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _generateHeaders = require('./generateHeaders');
-
-var _generateHeaders2 = _interopRequireDefault(_generateHeaders);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var H2 = function (_React$PureComponent) {
-  _inherits(H2, _React$PureComponent);
-
-  function H2() {
-    _classCallCheck(this, H2);
-
-    return _possibleConstructorReturn(this, _React$PureComponent.apply(this, arguments));
-  }
-
-  H2.prototype.render = function render() {
-    return _react2.default.createElement(_generateHeaders2.default, _extends({ size: '2' }, this.props));
-  };
-
-  return H2;
-}(_react2.default.PureComponent);
-
-exports.default = H2;
-},{"./generateHeaders":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/generateHeaders.js","react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js":[function(require,module,exports){
+},{"react":"react"}],"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js":[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -67382,7 +67523,7 @@ if ("development" === 'production') {
 },{"./cjs/scheduler-tracing.development.js":"/Users/buriedsignals/Code/node_modules/scheduler/cjs/scheduler-tracing.development.js","./cjs/scheduler-tracing.production.min.js":"/Users/buriedsignals/Code/node_modules/scheduler/cjs/scheduler-tracing.production.min.js"}],"__IDYLL_AST__":[function(require,module,exports){
 "use strict";
 
-module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "id": 2, "type": "component", "name": "TextContainer", "children": [{ "id": 3, "type": "meta", "properties": { "title": { "type": "value", "value": "Buried Signals" }, "description": { "type": "value", "value": "Experiments in visual storytelling." } } }] }, { "id": 4, "type": "component", "name": "Nav", "children": [] }, { "id": 5, "type": "component", "name": "TextContainer", "children": [{ "id": 6, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "page-container" } }, "children": [{ "id": 7, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "index-header" } }, "children": [{ "id": 8, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "logo-container" } }, "children": [{ "id": 9, "type": "component", "name": "SVG", "properties": { "src": { "type": "value", "value": "static/images/parasite.svg" }, "className": { "type": "value", "value": "logo-svg" } }, "children": [] }] }, { "id": 10, "type": "component", "name": "h4", "children": [{ "id": 11, "type": "textnode", "value": "Experiments in visual storytelling" }] }, { "id": 12, "type": "component", "name": "hr", "properties": { "className": { "type": "value", "value": "soft-separator" } }, "children": [] }] }, { "id": 13, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "articles-container" } }, "children": [{ "id": 14, "type": "component", "name": "h2", "children": [{ "id": 15, "type": "textnode", "value": "LATEST" }] }] }] }, { "id": 16, "type": "component", "name": "Footer", "children": [] }] }] };
+module.exports = { "id": 0, "type": "component", "name": "div", "children": [{ "id": 2, "type": "component", "name": "TextContainer", "children": [{ "id": 3, "type": "meta", "properties": { "title": { "type": "value", "value": "Buried Signals" }, "description": { "type": "value", "value": "Experiments in visual storytelling." } } }] }, { "id": 4, "type": "component", "name": "Nav", "children": [] }, { "id": 5, "type": "component", "name": "TextContainer", "children": [{ "id": 6, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "page-container" } }, "children": [{ "id": 7, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "index-header" } }, "children": [{ "id": 8, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "logo-container" } }, "children": [{ "id": 9, "type": "component", "name": "SVG", "properties": { "src": { "type": "value", "value": "static/images/parasite.svg" }, "className": { "type": "value", "value": "logo-svg" } }, "children": [] }] }, { "id": 10, "type": "component", "name": "h4", "children": [{ "id": 11, "type": "textnode", "value": "Visual experiments in journalism and fiction." }] }, { "id": 12, "type": "component", "name": "hr", "properties": { "className": { "type": "value", "value": "soft-separator" } }, "children": [] }] }, { "id": 13, "type": "component", "name": "div", "properties": { "className": { "type": "value", "value": "articles-container" } }, "children": [{ "id": 14, "type": "component", "name": "Posts", "children": [] }] }] }, { "id": 15, "type": "component", "name": "Footer", "children": [] }] }] };
 
 },{}],"__IDYLL_COMPONENTS__":[function(require,module,exports){
 'use strict';
@@ -67392,11 +67533,11 @@ module.exports = {
 	'nav': require('/Users/buriedsignals/Code/buriedsignals/components/nav.js'),
 	'svg': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js'),
 	'h4': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js'),
-	'h2': require('/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js'),
+	'posts': require('/Users/buriedsignals/Code/buriedsignals/components/posts.js'),
 	'footer': require('/Users/buriedsignals/Code/buriedsignals/components/footer.js')
 };
 
-},{"/Users/buriedsignals/Code/buriedsignals/components/footer.js":"/Users/buriedsignals/Code/buriedsignals/components/footer.js","/Users/buriedsignals/Code/buriedsignals/components/nav.js":"/Users/buriedsignals/Code/buriedsignals/components/nav.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h2.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js"}],"__IDYLL_CONTEXT__":[function(require,module,exports){
+},{"/Users/buriedsignals/Code/buriedsignals/components/footer.js":"/Users/buriedsignals/Code/buriedsignals/components/footer.js","/Users/buriedsignals/Code/buriedsignals/components/nav.js":"/Users/buriedsignals/Code/buriedsignals/components/nav.js","/Users/buriedsignals/Code/buriedsignals/components/posts.js":"/Users/buriedsignals/Code/buriedsignals/components/posts.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/h4.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/svg.js","/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js":"/Users/buriedsignals/Code/buriedsignals/node_modules/idyll/node_modules/idyll-components/dist/cjs/text-container.js"}],"__IDYLL_CONTEXT__":[function(require,module,exports){
 
 module.exports = function () {
 

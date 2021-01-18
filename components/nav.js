@@ -11,12 +11,9 @@ class Nav extends React.PureComponent {
     }
 
     sideDrawerToggleHandler() {
-        console.log(this.state.showSideDrawer);
         this.setState({
             showSideDrawer: !this.state.showSideDrawer 
         });
-        console.log("*****");
-        console.log(this.state.showSideDrawer);
         this.toggleHamburger();
     }
 

@@ -6,13 +6,12 @@
      [div className:"logo-container"]
       [SVG src:"static/images/parasite.svg" className:"logo-svg" /]
      [/div]
-     [h4]Experiments in visual storytelling[/h4]
+     [h4]Visual experiments in journalism and fiction.[/h4]
     // [CircleWave data:/]
     [hr className:"soft-separator" /]
   [/div]
   [div className:"articles-container"]
-    [h2]LATEST[/h2]
-  // * [Yemen](./yemen/)
+    [Posts /]
   [/div]
 [/div]
 

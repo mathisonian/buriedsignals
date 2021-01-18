@@ -2,9 +2,9 @@ const ARTICLES = [
     {
       title: 'Yemen',
       titleBreaks: ['Yemen'],
-      contributors: 'Aatish Bhatia',
+      contributors: 'Valentin Hauthuille',
       slug: 'yemen',
-      description: 'yemen',
+      description: 'Proxies in the Middle Eastern Cold War.',
       interactive: true,
       category: 'journalism',
     },
@@ -13,7 +13,7 @@ const ARTICLES = [
       titleBreaks: ['Stella'],
       contributors: '',
       slug: 'stella',
-      description: 'stella',
+      description: 'The galactic ambassador' + "'s daughter visits earth.",
       interactive: false,
       category: 'fiction',
     }
