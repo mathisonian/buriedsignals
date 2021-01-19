@@ -1,6 +1,6 @@
 const ARTICLES = [
     {
-      title: 'Yemen',
+      title: 'Yemen (coming soon)',
       titleBreaks: ['Yemen'],
       contributors: 'Valentin Hauthuille',
       slug: 'yemen',
@@ -9,7 +9,7 @@ const ARTICLES = [
       category: 'journalism',
     },
     {
-      title: 'Stella',
+      title: 'Stella (coming soon)',
       titleBreaks: ['Stella'],
       contributors: '',
       slug: 'stella',

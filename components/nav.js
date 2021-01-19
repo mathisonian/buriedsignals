@@ -60,7 +60,7 @@ class Nav extends React.PureComponent {
                     <li><a href="/about">About</a></li>
                     <li><a href="/now">Now</a></li>
                     <li><a href="/consulting">Consulting</a></li>
-                    <li><a href="https://buriedsignals.substack.com/p/coming-soon">Subscribe</a></li>
+                    <li><a href="https://buriedsignals.substack.com/p/coming-soon" target="_blank">Subscribe</a></li>
                 </ul>
             </nav>
         </div>

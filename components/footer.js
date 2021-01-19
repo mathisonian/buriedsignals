@@ -18,7 +18,7 @@ class Footer extends React.Component {
         </div>
         <div className="footer-second-row">
           <div className="footer-slogan">
-            <span>Experiments in visual storytelling.</span>
+            <span>Visual experiments in journalism and fiction.</span>
           </div>
           <div className="footer-social-icons">
             <a href="https://twitter.com/buriedsignals" rel="me" target="_blank">
