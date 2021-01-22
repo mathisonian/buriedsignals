@@ -1,6 +1,7 @@
-const React = require('react');
+// const React = require('react');
+import React from 'react';
 
-class Nav extends React.PureComponent {
+class Nav extends React.Component {
     
     constructor(props) {
         super(props);

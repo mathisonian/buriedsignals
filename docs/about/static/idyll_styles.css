@@ -393,13 +393,6 @@ hr.soft-separator {
     display: flex;
     height: 20px;
 }
-body, h2, h4, a { 
-  font-family: "Cardo";
-  margin: 0 0;
-  font-weight: 400;
-}
-
-
 .d3-component svg {
   background: #ddd;
   max-height: 300px;
