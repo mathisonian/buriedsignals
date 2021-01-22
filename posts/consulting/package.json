@@ -1,11 +1,12 @@
 {
-  "name": "consulting",
+  "name": "about",
   "version": "1.0.0",
   "license": "MIT",
   "idyll": {
-    "theme": "default",
-    "layout": "centered",
-    "css": "styles.css",
+    "favicon": "static/images/favicon.ico",
+    "theme": "../../static/theme.css",
+    "layout": "../../static/layout.css",
+    "css": "../about/styles.css",
     "authorView": false,
     "output": "../../docs/consulting/",
     "components": [

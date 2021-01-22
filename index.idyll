@@ -1,4 +1,7 @@
-[meta title:"Buried Signals" description:"Experiments in visual storytelling." /]
+[meta title:"Buried Signals" description:"Experiments in visual storytelling." 
+      shareImageUrl:"https://parametric.press/issue-02/algae/static/images/share.png"
+      shareImageWidth:"880"
+      shareImageHeight:"440" /]
 
 [Nav fullWidth:true /]
 [div className:"page-container"]

@@ -1,5 +1,5 @@
 {
-  "name": "yemen",
+  "name": "d3test",
   "version": "1.0.0",
   "license": "MIT",
   "idyll": {
@@ -7,7 +7,7 @@
     "layout": "centered",
     "css": "styles.css",
     "authorView": false,
-    "output": "../../docs/yemen/",
+    "output": "../../docs/d3test/",
     "components": [
       "../../components/",
       "components"

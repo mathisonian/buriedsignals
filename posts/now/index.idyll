@@ -1,116 +1,39 @@
-[meta title:"Now" description:"Short description of your project" /]
+[meta title:"Now" description:"Short description of your project" 
+      shareImageUrl:"https://parametric.press/issue-02/algae/static/images/share.png"
+      shareImageWidth:"880"
+      shareImageHeight:"440" /]
 
-[Header
-  fullWidth:true
-  title:"Now"
-  subtitle:"Welcome to Idyll. Open index.idyll to start writing"
-  author:"Your Name Here"
-  authorLink:"https://idyll-lang.org"
-  date:`(new Date()).toDateString()`
-  background:"#222222"
-  color:"#ffffff"
-   /]
+[Nav fullWidth:true /]
 
-## Introduction
+[div className:"page-container"]
+    Here’s what I’m up to right now:
 
-This is an Idyll post. It is generated via
-the file `index.idyll`. To compile this post using
-idyll, run the command `idyll` inside of this directory.
+    // I run an independent consulting studio - specializing in media design, delivering high fidelity consulting through strategy & stewardship. [br/] 
+    // Writing a book: The Strategic Independent. I’ve written about ~35k words on my blog here and have another ~20k in draft.. Expect this to become real in 2020.  
+    // Focusing on my blogging as an increasingly important and deliberate practice of networking and community. Experimenting with blogchains
+    // Starting a near-futures research studio and consultancy with Brian Dell: Little Futures
+    // Being present and full of life for my 4 year old daughter and 5-month old son.
+    // Co-creating an art business for Brooklyn artists with my partner Erin
+    // One day, maybe, launching a science fiction publishing company
+    // In the past I’ve done a lot of conference speaking - I’m open to new speaking opportunities so get in touch if you have an event you’d like me to speak at.
+    // I’m always looking to grab coffee with interesting people so get in touch: tjcritchlow@gmail.com
 
+    **the currents**
+    [ul]
+    [li]movie : Her[/li]
+    [li]tv show : Schitt's Creek[/li]
+    [li]director : Salomon Ligthelm[/li]
+    [li]developer/artist : Amelia Wattenberger[/li]
+    [li]book : The Three Body Problem[/li]
+    [li]blog : Melting Asphalt[/li]
+    [li]photographer : James Nachtwey[/li]
+    [li]music : Bring Me The Horizon[/li]
+    [li]place : somewhere in the south of France[/li]
+    [/ul]
 
-Idyll posts are designed to support interaction and
-data-driven graphics.
+    [br/][br/]
+    Last updated January 2021 [br/]
+    Inspired by Derek Sivers and The /Now Movement
+[/div]
+[Footer /]
 
-[var name:"state" value:0 /]
-[CustomD3Component className:"d3-component" state:state /]
-[button onClick:`state++`]
-  Click Me.
-[/button]
-
-Configuration can be done via the `idyll` field in `package.json`.
-
-## Markup
-
-Idyll is based on Markdown.
-
-You can use familiar syntax
-to create **bold** (`**bold**` ) and *italic* (``*italic*` ) styles,
-
-* lists
-* of
-* items,
-
-```
-* lists
-* of
-* items,
-```
-
-1. and numbered
-2. lists
-3. of items,
-
-
-```
-1. and numbered
-2. lists
-3. of items,
-```
-
-in addition to [hyperlinks](https://idyll-lang.org) and images:
-
-![quill](static/images/quill.svg)
-
-```
-![quill](static/images/quill.svg)
-```
-
-## Components
-
-Components can be embedded using a bracket syntax:
-
-```
-[Range /]
-```
-
-and can contain nested content:
-
-```
-[Equation]e = mc^{2}[/Equation]
-```
-
-Components accept properties:
-
-```
-[Range value:x min:0 max:1 /]
-```
-
-that can be bound to variables to achieve interactivity (more in next section).
-
-
-A variety of components are included by default. See [all the available components](https://idyll-lang.org/docs/components/). You can also use any html tag, for example: `[div] A div! [/div]`.
-
-To create your own, add it to the `components/` folder. There are examples of how to use Idyll with React and D3 based components already included.
-
-
-
-## Interactivity
-
-Here is how you can instantiate a variable and bind it to a component:
-
-[var name:"exampleVar" value:5 /]
-
-[Range min:0 max:10 value:exampleVar /]
-[Display value:exampleVar /]
-
-```
-[var name:"exampleVar" value:5 /]
-
-[Range min:0 max:10 value:exampleVar /]
-[Display value:exampleVar /]
-```
-
-## Learn More
-
-To learn more see the documentation at [https://idyll-lang.org/docs/](https://idyll-lang.org/docs/),
-join our [chatroom](https://gitter.im/idyll-lang/Lobby), or see the project on [GitHub](https://github.com/idyll-lang/idyll).

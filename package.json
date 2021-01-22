@@ -5,6 +5,7 @@
   "idyll": {
     "css": "styles.css",
     "googleFonts": ["Cardo"],
+    "favicon": "static/images/favicon.ico",
     "theme": "./static/theme.css",
     "layout": "./static/layout.css",
     "authorView": false,

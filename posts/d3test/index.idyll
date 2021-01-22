@@ -1,8 +1,8 @@
-[meta title:"Yemen" description:"Short description of your project" /]
+[meta title:"D3test" description:"Short description of your project" /]
 
 [Header
   fullWidth:true
-  title:"Yemen"
+  title:"D3test"
   subtitle:"Welcome to Idyll. Open index.idyll to start writing"
   author:"Your Name Here"
   authorLink:"https://idyll-lang.org"
@@ -57,6 +57,7 @@ to create **bold** (`**bold**` ) and *italic* (``*italic*` ) styles,
 3. of items,
 ```
 
+in addition to [hyperlinks](https://idyll-lang.org) and images:
 
 ![quill](static/images/quill.svg)
 
@@ -111,3 +112,5 @@ Here is how you can instantiate a variable and bind it to a component:
 
 ## Learn More
 
+To learn more see the documentation at [https://idyll-lang.org/docs/](https://idyll-lang.org/docs/),
+join our [chatroom](https://gitter.im/idyll-lang/Lobby), or see the project on [GitHub](https://github.com/idyll-lang/idyll).
