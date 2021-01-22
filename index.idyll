@@ -7,7 +7,7 @@
 [div className:"page-container"]
   [div className:"index-header"]
      [div className:"logo-container"]
-      [SVG src:"static/images/parasite.svg" className:"logo-svg" /]
+      // [SVG src:"static/images/parasite.svg" className:"logo-svg" /]
      [/div]
      [h4]Visual experiments in journalism and fiction.[/h4]
     // [CircleWave data:/]
@@ -17,7 +17,6 @@
     [Posts /]
   [/div]
 [/div]
-
 [Footer /]
 
 

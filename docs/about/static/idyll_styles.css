@@ -14,7 +14,7 @@
   text-decoration: none;
   color: black;
   font-size: 25px;
-  font-weight: bold;
+  /* font-weight: bold; */
   position: relative;
 }
 
@@ -278,29 +278,29 @@
   font-weight: lighter;
 }
 /* @import url('https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&display=swap'); */
-
 @font-face {
     font-family: 'Cardo';
-    src: './static/Cardo-Regular.ttf' format('truetype');
+    src: url('https://angry-shirley-07baba.netlify.app/static/Cardo-Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
-}
-@font-face {
+  }
+  @font-face {
     font-family: 'Cardo';
-    src: './static/Cardo-Bold.ttf' format('truetype');
+    src: url('https://angry-shirley-07baba.netlify.app/static/Cardo-Bold.ttf') format('truetype');
     font-weight: 700;
     font-style: bold;
-}
-@font-face {
+  }
+  @font-face {
     font-family: 'Cardo';
-    src: './static/Cardo-Italic.ttf' format('truetype');
+    src: url('https://angry-shirley-07baba.netlify.app/static/Cardo-Italic.ttf') format('truetype');
     font-weight: 400;
     font-style: italic;
-}
+  }
 
-body { 
+body, h2, h4, a { 
     font-family: "Cardo";
     margin: 0 0;
+    font-weight: 400;
 }
 
 .page-container {
@@ -393,6 +393,13 @@ hr.soft-separator {
     display: flex;
     height: 20px;
 }
+body, h2, h4, a { 
+  font-family: "Cardo";
+  margin: 0 0;
+  font-weight: 400;
+}
+
+
 .d3-component svg {
   background: #ddd;
   max-height: 300px;
