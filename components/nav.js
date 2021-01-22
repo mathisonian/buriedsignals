@@ -37,7 +37,7 @@ class Nav extends React.Component {
         <div className="navbar-container">
             <div className="navbar-logo">
                 <span className="nav-blue"></span>
-                <a href="#">
+                <a href="https://buriedsignals.com">
                     buried signals
                 </a>
             </div>
@@ -103,10 +103,10 @@ class Nav extends React.Component {
         <div id="side-drawer" className="overlay">
             <nav className="overlay-menu">
                 <ul>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/now">Now</a></li>
-                    <li><a href="/consulting">Consulting</a></li>
-                    <li><a href="https://buriedsignals.substack.com/p/coming-soon" target="_blank">Subscribe</a></li>
+                    <li><a href="https://buriedsignals.com/about">About</a></li>
+                    <li><a href="https://buriedsignals.com/now">Now</a></li>
+                    <li><a href="https://buriedsignals.com/consulting">Consulting</a></li>
+                    <li><a href="https://buriedsignals.substack.com/" target="_blank">Subscribe</a></li>
                 </ul>
             </nav>
         </div>
