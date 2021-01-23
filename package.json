@@ -4,7 +4,9 @@
   "license": "MIT",
   "idyll": {
     "css": "styles.css",
-    "googleFonts": ["Cardo"],
+    "googleFonts": [
+      "Cardo"
+    ],
     "favicon": "static/images/favicon.ico",
     "theme": "./static/theme.css",
     "layout": "./static/layout.css",
@@ -14,7 +16,6 @@
   "dependencies": {
     "d3": "^4.0.0",
     "idyll": "^4.4.0",
-    "idyll-d3-component": "^2.0.0",
-    "react": "ˆ16.0.0"
+    "idyll-d3-component": "^2.0.0"
   }
 }

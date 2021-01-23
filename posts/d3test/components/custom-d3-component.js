@@ -40,5 +40,9 @@ class CircleWave extends D3Component {
       });
     });
   }
+
+  update() {
+
+  }
 }
 module.exports = CircleWave;
